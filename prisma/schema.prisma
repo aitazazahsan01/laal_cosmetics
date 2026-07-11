@@ -1,0 +1,305 @@
+// LAAL Cosmetics — data model
+//
+// PROVIDER NOTE
+// -------------
+// `sqlite` is used for local development only. The schema is deliberately kept free of
+// SQLite-only quirks so that swapping to Postgres for production is a one-line provider
+// change plus a fresh migration:
+//   1. provider = "postgresql"
+//   2. point DATABASE_URL at the hosted database
+//   3. npx prisma migrate dev --name init
+//
+// Because Prisma does not support `enum` blocks on SQLite, every enum-shaped column is a
+// String with its allowed values documented directly above it. The matching TypeScript
+// union types and value lists live in lib/types.ts and are the single source of truth for
+// application code. On the Postgres swap these can become real enums if desired.
+//
+// Money is stored as whole Pakistani Rupees in Int columns (never Float / Decimal), so
+// arithmetic is exact and portable across both providers.
+//
+// JSON-shaped content is stored as a String holding a JSON document. Parsing and typing
+// happen in lib/products.ts. On Postgres these can become `Json` columns.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue
+// ---------------------------------------------------------------------------
+
+/// A LAAL product. Content discipline: fields LAAL has not yet supplied stay null and are
+/// rendered with a visible "pending" treatment in the UI — never filled with invented copy.
+model Product {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  // Identity — supplied by LAAL (printed on the physical packaging).
+  name        String /// e.g. "Niacinamide+"
+  tagline     String /// e.g. "Oil Control Serum"
+  activesLine String /// e.g. "Niacinamide 5% · Zinc PCA 0.5%"
+  descriptor  String /// Who-it's-for sentence shown under the name.
+
+  // Commerce
+  priceRs  Int? /// Whole PKR. NULL = price not yet supplied by LAAL.
+  sizeMl   Int
+  stockQty Int @default(50) /// Stock status ("In stock" / "Sold out") is DERIVED from this,
+  ///                          never stored — see productStockStatus() in lib/products.ts.
+
+  // Long-form content
+  shortDescription String? /// NULL until LAAL supplies it.
+  whatItDoes       String? /// JSON: string[] — mechanisms, plain language. NULL until supplied.
+  timelineByWeek   String? /// JSON: { label: string; text: string }[]. NULL until supplied.
+  whoFor           String /// Real, from the box artwork.
+  whoShouldWait    String? /// NULL until supplied — contraindications are never invented.
+  howToUseAM       String /// JSON: string[] — real, from the box artwork.
+  howToUsePM       String /// JSON: string[] — real, from the box artwork.
+  inciList         String /// Real, from the box artwork. Always visible, never collapsed.
+  patchTestNote    String /// Real, from the box artwork.
+  faq              String? /// JSON: { question: string; answer: string | null }[]. NULL until supplied.
+
+  /// JSON: string[] of image paths served through the authenticated /api/admin/uploads route
+  /// or from /public. NULL/empty means no photography yet, and the line-art placeholder plus
+  /// its <PendingNote> is shown instead.
+  imageUrls String?
+
+  // Merchandising
+  pairsWithSlug String /// Slug of the paired product, for the cross-sell card.
+  sortOrder     Int    @default(0)
+  isActive      Boolean @default(true)
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// Orders — schema only in this pass; no UI is wired to these yet (Phase 2).
+// ---------------------------------------------------------------------------
+
+model Order {
+  id          String @id @default(cuid())
+  orderNumber String @unique /// Human-facing reference, e.g. "LAAL-2026-0001".
+
+  // Customer (guest checkout — no account required).
+  customerName     String
+  customerWhatsapp String /// Primary contact channel; order updates go here.
+  customerEmail    String?
+
+  // Delivery address
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  province     String
+  postalCode   String?
+  notes        String? /// Customer-supplied order notes.
+
+  items OrderItem[]
+
+  // Money — whole PKR.
+  subtotalRs    Int
+  deliveryFeeRs Int @default(0)
+  discountRs    Int @default(0)
+  totalRs       Int
+
+  discountCodeId String?
+  discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
+
+  /// PaymentMethod: COD | EASYPAISA | JAZZCASH | BANK_TRANSFER
+  paymentMethod        String
+  /// Proof-of-payment upload for Easypaisa / JazzCash / bank transfer.
+  paymentScreenshotUrl String?
+
+  /// OrderStatus: PENDING_PAYMENT | CONFIRMED | PACKED | DISPATCHED | DELIVERED | CANCELLED
+  status         String  @default("PENDING_PAYMENT")
+  trackingNumber String?
+  internalNotes  String? /// Admin-only; never shown to the customer.
+
+  confirmedAt  DateTime?
+  dispatchedAt DateTime?
+  deliveredAt  DateTime?
+  cancelledAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([customerWhatsapp])
+  @@index([discountCodeId])
+}
+
+/// A line on an order. Product name/slug/price are denormalised so historic orders stay
+/// accurate if the catalogue later changes.
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  productSlug String
+  productName String
+
+  unitPriceRs Int
+  quantity    Int @default(1)
+  lineTotalRs Int
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model DiscountCode {
+  id          String  @id @default(cuid())
+  code        String  @unique /// Stored uppercase; compare case-insensitively in app code.
+  description String?
+
+  /// DiscountType: PERCENT | FIXED
+  type  String
+  value Int /// Percent (1–100) when PERCENT, whole PKR when FIXED.
+
+  minSubtotalRs  Int?
+  maxRedemptions Int? /// NULL = unlimited.
+  timesRedeemed  Int  @default(0)
+
+  startsAt DateTime?
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model StockistEnquiry {
+  id           String  @id @default(cuid())
+  businessName String
+  /// BusinessType: CLINIC | SALON | PHARMACY | DISTRIBUTOR | OTHER
+  businessType String?
+  contactName  String
+  whatsapp     String
+  email        String?
+  city         String
+  province     String?
+  /// Free text (e.g. "10-25 units"), not a number — LAAL has not defined volume bands yet.
+  expectedMonthlyVolume String?
+  message      String?
+
+  /// StockistEnquiryStatus: NEW | CONTACTED | APPROVED | DECLINED
+  status        String  @default("NEW")
+  internalNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Singleton row (id = "default") holding shop-wide delivery configuration, editable from
+/// the admin panel in Phase 2. Nullable money fields mean "LAAL has not supplied this yet".
+model DeliverySettings {
+  id String @id @default("default")
+
+  standardFeeRs           Int? /// NULL = delivery fee not yet supplied.
+  freeDeliveryThresholdRs Int? /// NULL = free-delivery threshold not yet supplied.
+  codAvailable            Boolean @default(true)
+  codSurchargeRs          Int?
+
+  estimatedDaysMin Int?
+  estimatedDaysMax Int?
+
+  announcementBanner String? /// Optional site-wide banner copy, supplied by LAAL.
+
+  updatedAt DateTime @updatedAt
+}
+
+/// A general enquiry from the Contact page.
+///
+/// Deliberately separate from StockistEnquiry: the SRS keeps the wholesale/stockist funnel
+/// structurally apart from general contact, and the two carry different fields, different
+/// triage and different notification copy. They are not two labels on one table.
+model ContactMessage {
+  id      String  @id @default(cuid())
+  name    String
+  email   String
+  message String
+
+  /// ContactMessageStatus: NEW | READ | REPLIED
+  status        String  @default("NEW")
+  internalNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+  /// bcrypt hash. A plaintext password is never stored, never logged and never returned.
+  passwordHash String
+
+  /// AdminRole: OWNER | ADMIN | STAFF
+  role     String  @default("ADMIN")
+  isActive Boolean @default(true)
+
+  lastLoginAt DateTime?
+
+  sessions            AdminSession[]
+  passwordResetTokens AdminPasswordResetToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Server-side admin sessions.
+///
+/// Sessions are stored rather than encoded into a self-contained token so they can be
+/// revoked immediately (logout, password reset, deactivating a user). Only the SHA-256 hash
+/// of the session token is stored — a leaked database row cannot be replayed as a cookie.
+model AdminSession {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminUserId])
+  @@index([expiresAt])
+}
+
+/// Single-use, expiring password-reset tokens. Same rule as sessions: only the hash is
+/// stored, so the raw token exists only in the email (stubbed) and the user's URL.
+model AdminPasswordResetToken {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([adminUserId])
+}
