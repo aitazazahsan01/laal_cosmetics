@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * Font stack defaults.
+   *
+   * These live on `html` (specificity 0,0,1) rather than `:root` (0,1,0) on purpose: the
+   * class next/font puts on <html> is specificity 0,1,0 and must win. If next/font is ever
+   * removed, these system stacks take over with no other change.
+   */
+  html {
+    --font-heading: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype",
+      Palatino, Georgia, serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
+
+    /*
+     * Light-theme only, by deliberate brand decision — the SRS requires the storefront to
+     * stay predominantly white. Do not add a dark mode here.
+     */
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-white text-ink font-sans text-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-oxblood font-serif;
+    text-wrap: balance;
+  }
+
+  /* Ruby focus ring, everywhere. Never remove it. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ruby ring-offset-2 ring-offset-white;
+  }
+}
+
+@layer components {
+  /* Uppercase, letter-spaced sans — section labels, eyebrows. */
+  .label {
+    @apply font-sans text-[0.72rem] font-bold uppercase tracking-label text-ruby;
+  }
+
+  /* Page shells. */
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5;
+  }
+
+  .shell-narrow {
+    @apply mx-auto w-full max-w-page px-5;
+  }
+}
