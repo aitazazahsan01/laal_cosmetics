@@ -340,7 +340,18 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
         {paired ? (
           <Section label="Pairs with">
             <div className="mt-6 flex max-w-[480px] items-center gap-5 rounded-panel border border-line p-6">
-              <BottleMark variant="front" height={96} className="flex-none" />
+              <div className="flex h-[96px] w-[96px] flex-none items-center justify-center">
+                {paired.imageUrls[0] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={paired.imageUrls[0]}
+                    alt={paired.name}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <BottleMark variant="front" height={96} />
+                )}
+              </div>
               <div>
                 <span className="text-[0.72rem] uppercase tracking-nav text-muted">
                   {paired.tagline}
