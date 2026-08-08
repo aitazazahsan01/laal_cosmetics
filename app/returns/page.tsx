@@ -4,7 +4,6 @@ import {
   PolicyPage,
   PolicySection,
 } from "@/components/policy/PolicyPage";
-import { PendingNote } from "@/components/ui/PendingNote";
 
 export const metadata: Metadata = {
   title: "Returns",
@@ -16,8 +15,7 @@ export const metadata: Metadata = {
  *
  * The hygiene framing is factual and safe to state — a serum applied directly to skin cannot
  * be resold once opened, which is why the distinction between opened and unopened exists at
- * all. The actual terms (window length, refund routing, what counts as faulty) are commercial
- * decisions only LAAL can make, so each one is a <PendingNote> rather than an invented figure.
+ * all. The terms themselves are real, from the LAAL Website Content Pack §9.
  */
 export default function ReturnsPage() {
   return (
@@ -40,22 +38,21 @@ export default function ReturnsPage() {
 
       <PolicySection heading="The terms">
         <ul className="max-w-[60ch] list-disc space-y-3 pl-5 text-[0.95rem]">
+          <li>Return window: 14 days of delivery, sealed and unopened.</li>
           <li>
-            Return window:{" "}
-            <PendingNote label="Pending — LAAL to supply" />
+            Unopened items: sealed and unopened units may be exchanged within
+            14 days of delivery.
           </li>
           <li>
-            Unopened items:{" "}
-            <PendingNote label="Pending — LAAL to supply" />
+            Faulty or damaged on arrival: photograph it before opening and
+            message us — we will replace it and cover the courier.
           </li>
           <li>
-            Faulty or damaged on arrival:{" "}
-            <PendingNote label="Pending — LAAL to supply" />
-          </li>
-          <li>
-            Refund method: <PendingNote label="Pending — LAAL to supply" /> — no
-            card details are ever stored, so refunds route back through the
-            original payment method or by bank transfer.
+            Refund method: no card details are ever stored, so refunds route
+            back through the original payment method or by bank transfer. If
+            a product causes a reaction, stop using it and message us the
+            same day — we will help you work out what happened and replace
+            or refund.
           </li>
         </ul>
       </PolicySection>

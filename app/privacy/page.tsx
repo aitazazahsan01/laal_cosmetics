@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import {
-  LegalReviewFlag,
   PolicyPage,
   PolicySection,
 } from "@/components/policy/PolicyPage";
@@ -15,8 +14,9 @@ export const metadata: Metadata = {
  * Privacy.
  *
  * The factual inventory below is safe to state — it is simply what the checkout form and the
- * database actually collect, verifiable against prisma/schema.prisma. The privacy policy
- * itself is not drafted here: see LegalReviewFlag.
+ * database actually collect, verifiable against prisma/schema.prisma. "How we handle it" is
+ * real, LAAL-supplied privacy wording from the Website Content Pack §9 — no longer a
+ * placeholder, so LegalReviewFlag has been removed from this page.
  */
 export default function PrivacyPage() {
   return (
@@ -51,7 +51,15 @@ export default function PrivacyPage() {
         </p>
       </PolicySection>
 
-      <LegalReviewFlag page="Privacy" />
+      <PolicySection heading="How we handle it">
+        <p className="max-w-[62ch] text-[0.95rem]">
+          We collect only what is needed to fulfil your order: name, contact
+          number, delivery address and order details. We do not sell, rent or
+          share your information with third parties. Payment is made directly
+          through Easypaisa, JazzCash or bank transfer — no card details are
+          stored on this website at any point.
+        </p>
+      </PolicySection>
     </PolicyPage>
   );
 }

@@ -40,8 +40,8 @@ export default async function ShippingPage() {
       title="Shipping"
       intro={
         <p className="text-muted">
-          LAAL delivers nationwide across Pakistan, with Cash on Delivery
-          available everywhere we ship.
+          Pakistan-wide delivery in 3–5 working days from confirmed payment,
+          with Cash on Delivery available in major cities.
         </p>
       }
     >
