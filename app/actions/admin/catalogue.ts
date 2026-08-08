@@ -79,6 +79,7 @@ export async function updateProductAction(formData: FormData): Promise<void> {
       // priceRs stays nullable on purpose: clearing the field puts the storefront back into
       // its honest "price pending" state rather than forcing a number.
       priceRs: optionalInt(formData, "priceRs"),
+      listPriceRs: optionalInt(formData, "listPriceRs"),
       stockQty,
       shortDescription: shortDescription || null,
       imageUrls: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,

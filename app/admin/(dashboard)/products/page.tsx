@@ -57,14 +57,22 @@ export default async function AdminProductsPage({
             >
               <input type="hidden" name="slug" value={product.slug} />
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
                 <AdminField
-                  label="Price (Rs)"
+                  label="Sell price (Rs)"
                   name="priceRs"
                   type="number"
                   min="0"
                   defaultValue={product.priceRs ?? ""}
                   hint="Leave blank for “pending”."
+                />
+                <AdminField
+                  label="List price (Rs.)"
+                  name="listPriceRs"
+                  type="number"
+                  min="0"
+                  defaultValue={product.listPriceRs ?? ""}
+                  hint="Shown struck through. Leave blank to hide."
                 />
                 <AdminField
                   label="Stock quantity"
