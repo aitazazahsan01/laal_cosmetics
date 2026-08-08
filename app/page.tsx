@@ -1,27 +1,65 @@
+import type { Metadata } from "next";
+
 import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product/ProductCard";
-import { BottleMark } from "@/components/ui/BottleMark";
 import { ButtonLink } from "@/components/ui/Button";
-import { PendingNote } from "@/components/ui/PendingNote";
 
 // Stock and catalogue content come straight from the database on every request.
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  // `absolute` bypasses the root layout's "%s — LAAL" title template — this exact string is
+  // the content pack's SEO title tag, and must not get "— LAAL" appended a second time.
+  title: { absolute: "LAAL — Skincare, Studied | Serums Made in Pakistan" },
+  description:
+    "Two serums with every ingredient printed and every active named at the concentration used. Independently tested at PCSIR. No fairness claims.",
+};
 
 /**
  * Home.
  *
  * Content provenance, section by section:
- *  - Hero headline: LAAL's own approved packaging copy ("Every ingredient printed. Every
- *    active named."). Real.
- *  - Hero supporting line: carried over from the Phase A mockup, where it was flagged as
- *    draft pending LAAL approval — so it keeps its pending marker here.
+ *  - Hero headline, supporting line and buttons: real, approved copy from the LAAL Website
+ *    Content Pack §4.
+ *  - Hero image: an AI-rendered product mockup (docs/brand/LAAL_Website_Content_Pack.pdf
+ *    §13.2 — real photography replaces it once the first batch arrives).
+ *  - Trust strip (below hero) and "Why LAAL": real copy from the Content Pack §4.
  *  - Product cards: live from the database.
- *  - "Why LAAL": LAAL has supplied nothing for this section. Three <PendingNote> slots, no
- *    invented brand claims.
- *  - "How to order" and the trust strip: factual site mechanics from the SRS (guest
+ *  - "How to order" and the bottom trust strip: factual site mechanics from the SRS (guest
  *    checkout, four payment methods, WhatsApp tracking, COD nationwide, full INCI on every
  *    product, patch-test guidance). Safe to state.
+ *  - Closing block: real copy from the Content Pack §4.
  */
+
+const HERO_TRUST_POINTS = [
+  {
+    lead: "Independently tested.",
+    body: "Both serums tested at PCSIR Laboratories, Islamabad. Mercury: not detectable.",
+  },
+  {
+    lead: "Every ingredient printed.",
+    body: "Full INCI on every bottle, every box and every product page.",
+  },
+  {
+    lead: "No fairness claims. Ever.",
+    body: "We do not sell skin lightening, and we never will.",
+  },
+];
+
+const WHY_LAAL = [
+  {
+    lead: "We name the concentration.",
+    body: 'Niacinamide 5%. Zinc PCA 0.5%. Not "contains niacinamide" — the actual number, because the number is what decides whether it works.',
+  },
+  {
+    lead: "We tested it before we sold it.",
+    body: "Both formulations went to a government laboratory before a single bottle was sold. Patch test negative. Mercury not detectable. Report available on request.",
+  },
+  {
+    lead: "We tell you who it is not for.",
+    body: "Every product page says who should wait. A brand that only tells you the good part is telling you half of it.",
+  },
+];
 
 const HOW_TO_ORDER = [
   {
@@ -56,37 +94,44 @@ export default async function HomePage() {
           <div>
             <span className="label">LAAL · Pakistani skincare</span>
             <h1 className="mt-4 max-w-[15ch] font-serif text-[clamp(2.1rem,5vw,3.4rem)] leading-[1.14]">
-              Every ingredient printed.
-              <br />
-              Every active named.
+              Skincare, studied.
             </h1>
 
             <div className="mt-5 max-w-[46ch] border-l-2 border-dashed border-ruby pl-4">
               <p className="text-[1.08rem]">
-                Two serums, full ingredient lists, guest checkout, delivered
-                nationwide.
+                Two serums. Every ingredient printed. Every active named at
+                the concentration it is used.
               </p>
-              <PendingNote
-                label="Draft — LAAL to approve"
-                className="mt-2"
-              />
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <ButtonLink href="/shop">Shop the serums</ButtonLink>
-              <ButtonLink href="#why-laal" variant="secondary">
-                Why LAAL
+              <ButtonLink href="/ingredients" variant="secondary">
+                Read the ingredients
               </ButtonLink>
             </div>
           </div>
 
           <div className="flex justify-center">
-            <BottleMark
-              variant="front"
-              height={380}
-              title="Illustration of a LAAL serum bottle — product photography pending"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/niacinamide-2.png"
+              alt="LAAL Niacinamide+ serum"
+              className="max-h-[420px] w-auto object-contain"
             />
           </div>
+        </div>
+      </section>
+
+      {/* Trust strip — directly under the hero, three short items */}
+      <section className="border-b border-line">
+        <div className="shell grid grid-cols-1 gap-8 py-12 md:grid-cols-3">
+          {HERO_TRUST_POINTS.map((point) => (
+            <div key={point.lead} className="border-t-2 border-ruby pt-4">
+              <h2 className="text-[1.02rem] font-bold">{point.lead}</h2>
+              <p className="mt-2 text-[0.92rem] text-muted">{point.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -108,7 +153,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Why LAAL — nothing supplied yet */}
+      {/* Why LAAL */}
       <section
         id="why-laal"
         className="border-y border-line bg-blush py-section"
@@ -119,19 +164,13 @@ export default async function HomePage() {
             <h2 className="mt-3 max-w-[22ch] font-serif text-[clamp(1.6rem,3vw,2.1rem)]">
               Why LAAL
             </h2>
-            <p className="mt-4 max-w-[52ch] text-[0.95rem] text-muted">
-              This section is reserved for LAAL&rsquo;s own words. Nothing is
-              written here on the brand&rsquo;s behalf.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {[1, 2, 3].map((point) => (
-              <div key={point} className="border-t-2 border-ruby pt-4">
-                <PendingNote
-                  variant="block"
-                  label={`Point ${point} — pending, LAAL to supply`}
-                />
+            {WHY_LAAL.map((point) => (
+              <div key={point.lead} className="border-t-2 border-ruby pt-4">
+                <h3 className="text-[1.02rem] font-bold">{point.lead}</h3>
+                <p className="mt-2 text-[0.92rem] text-muted">{point.body}</p>
               </div>
             ))}
           </div>
@@ -179,6 +218,22 @@ export default async function HomePage() {
               <span>{point}</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Closing block — real copy, Content Pack §4 */}
+      <section className="border-t border-line py-section">
+        <div className="shell">
+          <div className="mx-auto max-w-[62ch] text-center">
+            <h2 className="font-serif text-[clamp(1.6rem,3vw,2.1rem)]">
+              Two products. That is the whole range.
+            </h2>
+            <p className="mt-4 text-[1rem] text-muted">
+              One treats. One repairs. Together they are a complete routine,
+              and we would rather do two things properly than ten things
+              adequately.
+            </p>
+          </div>
         </div>
       </section>
     </main>
