@@ -11,6 +11,8 @@ export const SITE = {
   domain: "laalcosmetics.com",
   url: "https://laalcosmetics.com",
   city: "Islamabad, Pakistan",
+  /** Real, from the LAAL Website Content Pack §3. */
+  address: "Building 67, Square Commercial, Bahria Town Phase 7, Islamabad",
   /** Real, from LAAL's approved packaging copy. */
   tagline: "Every ingredient printed. Every active named.",
   /** Real, from the Phase A approved design. */
@@ -19,14 +21,10 @@ export const SITE = {
 } as const;
 
 /**
- * TODO(LAAL): replace with the real WhatsApp Business number, full international format,
- * digits only, no "+" or spaces — e.g. "923001234567".
- *
- * Until it is supplied this placeholder deliberately produces an invalid wa.me link rather
- * than dialling an unrelated real number. `WHATSAPP_CONFIGURED` is false while it is unset,
- * so the UI can flag the number as pending.
+ * Real WhatsApp Business number, from the LAAL Website Content Pack §3 (local format
+ * "0328 5780220" converted to full international format, digits only).
  */
-export const WHATSAPP_NUMBER = "92XXXXXXXXXX";
+export const WHATSAPP_NUMBER = "923285780220";
 
 export const WHATSAPP_CONFIGURED = /^\d{8,15}$/.test(WHATSAPP_NUMBER);
 
@@ -36,6 +34,13 @@ export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
  * TODO(LAAL): contact email address not supplied yet.
  */
 export const CONTACT_EMAIL: string | null = null;
+
+/**
+ * TODO(LAAL): Instagram handle to be supplied — leave the icon in place and link it later
+ * (content pack §13.1). Null renders the icon inert, the same "pending" pattern as WhatsApp
+ * and email above.
+ */
+export const INSTAGRAM_URL: string | null = null;
 
 /** Primary navigation. Every route here is built. */
 export const PRIMARY_NAV = [
@@ -94,9 +99,11 @@ export const PROVINCES = [
 /**
  * Payment account details for the three non-COD methods.
  *
- * TODO(LAAL): none of these have been supplied. Every field is null on purpose and renders a
- * <PendingNote> at checkout — account numbers and IBANs are never guessed or placeholdered
- * with plausible-looking digits, because a customer could actually send money to them.
+ * Easypaisa's account number is real, from the LAAL Website Content Pack §3. The account
+ * title, and every JazzCash/bank transfer field, have not been supplied and stay null on
+ * purpose so they render a <PendingNote> at checkout — account numbers and IBANs are never
+ * guessed or placeholdered with plausible-looking digits, because a customer could actually
+ * send money to them.
  */
 export const PAYMENT_ACCOUNTS: Record<
   "EASYPAISA" | "JAZZCASH" | "BANK_TRANSFER",
@@ -106,7 +113,7 @@ export const PAYMENT_ACCOUNTS: Record<
     label: "Easypaisa",
     fields: [
       { label: "Account title", value: null },
-      { label: "Account number", value: null },
+      { label: "Account number", value: "0328-5780220" },
     ],
   },
   JAZZCASH: {

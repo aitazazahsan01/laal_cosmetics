@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   CONTACT_EMAIL,
   FOOTER_NAV,
+  INSTAGRAM_URL,
   SITE,
   WHATSAPP_CONFIGURED,
   WHATSAPP_URL,
@@ -28,6 +29,10 @@ export function Footer() {
           </span>
           <p className="mt-[0.9rem] max-w-[30ch] text-[0.85rem] text-blush/70">
             {SITE.footerBlurb}
+          </p>
+
+          <p className="mt-6 max-w-[30ch] text-[0.85rem] text-blush/70">
+            {SITE.address}
           </p>
 
           <div className="mt-6 text-[0.85rem]">
@@ -67,6 +72,29 @@ export function Footer() {
               </div>
             )}
           </div>
+
+          <div className="mt-6 flex items-center gap-3">
+            {INSTAGRAM_URL ? (
+              <a
+                href={INSTAGRAM_URL}
+                className="text-blush/80 hover:text-white"
+                rel="noopener noreferrer"
+                target="_blank"
+                aria-label="LAAL on Instagram"
+              >
+                <InstagramIcon />
+              </a>
+            ) : (
+              <span
+                className="text-blush/40"
+                role="img"
+                aria-label="Instagram — pending, LAAL to supply"
+                title="Instagram — pending, LAAL to supply"
+              >
+                <InstagramIcon />
+              </span>
+            )}
+          </div>
         </div>
 
         {FOOTER_NAV.map((column) => (
@@ -97,6 +125,25 @@ export function Footer() {
         <span>{SITE.domain}</span>
       </div>
     </footer>
+  );
+}
+
+/** Instagram glyph, matching the WhatsApp icon's currentColor / viewBox convention. */
+function InstagramIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
+      <circle cx="12" cy="12" r="4.6" />
+      <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
   );
 }
 
