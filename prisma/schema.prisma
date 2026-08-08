@@ -47,6 +47,7 @@ model Product {
 
   // Commerce
   priceRs  Int? /// Whole PKR. NULL = price not yet supplied by LAAL.
+  listPriceRs Int? /// Whole PKR, struck through next to priceRs when set. NULL = no list price shown.
   sizeMl   Int
   stockQty Int @default(50) /// Stock status ("In stock" / "Sold out") is DERIVED from this,
   ///                          never stored — see productStockStatus() in lib/products.ts.
