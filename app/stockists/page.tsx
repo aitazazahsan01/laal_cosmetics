@@ -4,9 +4,10 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { StockistForm } from "@/components/stockists/StockistForm";
 
 export const metadata: Metadata = {
-  title: "Stockists",
+  // `absolute` bypasses the root layout's "%s — LAAL" title template.
+  title: { absolute: "Stock LAAL — For Clinics, Salons and Pharmacies" },
   description:
-    "Clinics, salons, pharmacies and distributors — enquire about stocking LAAL.",
+    "Trade enquiries for aestheticians, clinics and pharmacies. Documentation and batch quality-control reports supplied with every order.",
 };
 
 /**

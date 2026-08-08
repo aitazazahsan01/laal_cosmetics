@@ -10,9 +10,10 @@ import { ProductName } from "@/components/ui/ProductName";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ingredients",
+  // `absolute` bypasses the root layout's "%s — LAAL" title template.
+  title: { absolute: "Every Ingredient, Explained | LAAL" },
   description:
-    "Every active across both LAAL serums, and both full INCI lists in full.",
+    "The full INCI of both LAAL serums with a plain-language explanation of what each ingredient does and why it is there.",
 };
 
 /**

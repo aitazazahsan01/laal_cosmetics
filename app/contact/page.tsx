@@ -95,6 +95,15 @@ export default function ContactPage() {
       </section>
 
       <section className="border-t border-line py-10">
+        <div className="rounded-panel border border-line bg-blush p-7">
+          <span className="text-[0.72rem] uppercase tracking-nav text-muted">
+            Address
+          </span>
+          <p className="mt-2 text-[0.95rem]">{SITE.address}</p>
+        </div>
+      </section>
+
+      <section className="border-t border-line py-10">
         <span className="label">Send a message</span>
         <h2 className="mb-7 mt-1 font-serif text-[1.4rem]">
           Or use the form
