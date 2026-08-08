@@ -18,11 +18,13 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1106.0",
     "@prisma/client": "6.19.3",
     "bcryptjs": "^3.0.3",
     "next": "15.5.23",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "resend": "^6.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
