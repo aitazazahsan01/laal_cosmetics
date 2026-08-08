@@ -21,11 +21,28 @@ export function ProductCard({
 }) {
   const href = `/${product.slug}`;
   const price = formatRs(product.priceRs);
+  const listPrice =
+    product.listPriceRs !== null &&
+    product.priceRs !== null &&
+    product.listPriceRs > product.priceRs
+      ? formatRs(product.listPriceRs)
+      : null;
+
+  const thumbnail = product.imageUrls[0];
 
   return (
     <article className="flex flex-col rounded-card border border-line bg-white p-8">
-      <div className="mb-2 self-center">
-        <BottleMark variant="front" height={168} />
+      <div className="mb-2 flex h-[168px] items-center justify-center self-center">
+        {thumbnail ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={thumbnail}
+            alt={product.name}
+            className="h-full w-auto object-contain"
+          />
+        ) : (
+          <BottleMark variant="front" height={168} />
+        )}
       </div>
 
       <span className="text-[0.72rem] uppercase tracking-nav text-muted">
@@ -48,7 +65,14 @@ export function ProductCard({
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         {price ? (
-          <span className="font-serif text-[1.15rem] text-oxblood">{price}</span>
+          <span className="flex items-baseline gap-2">
+            {listPrice ? (
+              <span className="text-[0.85rem] text-muted line-through">
+                {listPrice}
+              </span>
+            ) : null}
+            <span className="font-serif text-[1.15rem] text-oxblood">{price}</span>
+          </span>
         ) : (
           <PendingNote label="Price pending" />
         )}

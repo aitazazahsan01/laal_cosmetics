@@ -38,6 +38,14 @@ const STUB_FAQ = (productName: string, pairedName: string) => [
 
 const TIMELINE_STUB_LABELS = ["Week 1–2", "Week 3–4", "Week 6+"];
 
+/** Splits a "·"-joined string of clauses into a list of individual, trimmed items. */
+function splitClauses(value: string): string[] {
+  return value
+    .split("·")
+    .map((clause) => clause.trim())
+    .filter(Boolean);
+}
+
 function SectionLabel({ children }: { children: ReactNode }) {
   return <span className="label mb-[0.6rem] block">{children}</span>;
 }
@@ -64,9 +72,33 @@ function Section({
   );
 }
 
+/**
+ * Exact, SEO-critical title/description pairs from the LAAL Website Content Pack §10 —
+ * fixed strings, not derived from DB fields, so they stay stable regardless of catalogue edits.
+ */
+const SEO_METADATA: Record<string, { title: string; description: string }> = {
+  niacinamide: {
+    title: "Niacinamide 5% + Zinc PCA Serum for Oily Skin | LAAL",
+    description:
+      "Niacinamide 5% with Zinc PCA 0.5% for oily, congested and blemish-prone skin. Full ingredient list, honest timeline, PCSIR tested. Rs 1,784, 30 ml.",
+  },
+  hyaluronic: {
+    title: "Hyaluronic Acid + B5 Barrier Repair Serum | LAAL",
+    description:
+      "Hyaluronic acid, vitamin B5 and vitamin E for dry, tight and sensitised skin. Full ingredient list, PCSIR tested. Rs 1,784, 30 ml.",
+  },
+};
+
 export async function buildProductMetadata(slug: string): Promise<Metadata> {
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Product not found — LAAL" };
+
+  const fixed = SEO_METADATA[slug];
+  if (fixed) {
+    // `absolute` bypasses the root layout's "%s — LAAL" title template — these are the
+    // content pack's exact SEO title tags, which already end in "| LAAL".
+    return { title: { absolute: fixed.title }, description: fixed.description };
+  }
 
   return {
     title: `${product.name} — ${product.tagline} — LAAL`,
@@ -80,6 +112,12 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
 
   const paired = await getProductBySlug(product.pairsWithSlug);
   const price = formatRs(product.priceRs);
+  const listPrice =
+    product.listPriceRs !== null &&
+    product.priceRs !== null &&
+    product.listPriceRs > product.priceRs
+      ? formatRs(product.listPriceRs)
+      : null;
 
   const faqEntries =
     product.faq.length > 0
@@ -131,9 +169,16 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
             <div className="mt-6 border-y border-line py-[1.1rem]">
               <div className="flex flex-wrap items-baseline gap-3">
                 {price ? (
-                  <span className="font-serif text-[1.5rem] text-oxblood">
-                    {price}
-                  </span>
+                  <>
+                    {listPrice ? (
+                      <span className="text-[1rem] text-muted line-through">
+                        {listPrice}
+                      </span>
+                    ) : null}
+                    <span className="font-serif text-[1.5rem] text-oxblood">
+                      {price}
+                    </span>
+                  </>
                 ) : (
                   <>
                     <span className="font-serif text-[1.5rem] text-oxblood">
@@ -223,8 +268,10 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
               <h3 className="text-[0.95rem] uppercase tracking-[0.06em] text-ruby">
                 Who it&rsquo;s for
               </h3>
-              <ul className="mt-3 list-disc pl-[1.1rem] text-[0.94rem]">
-                <li>{product.whoFor}</li>
+              <ul className="mt-3 list-disc space-y-1 pl-[1.1rem] text-[0.94rem]">
+                {splitClauses(product.whoFor).map((clause) => (
+                  <li key={clause}>{clause}</li>
+                ))}
               </ul>
             </div>
             <div>
@@ -233,8 +280,10 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
               </h3>
               <div className="mt-3">
                 {product.whoShouldWait ? (
-                  <ul className="list-disc pl-[1.1rem] text-[0.94rem]">
-                    <li>{product.whoShouldWait}</li>
+                  <ul className="list-disc space-y-1 pl-[1.1rem] text-[0.94rem]">
+                    {splitClauses(product.whoShouldWait).map((clause) => (
+                      <li key={clause}>{clause}</li>
+                    ))}
                   </ul>
                 ) : (
                   <PendingNote
@@ -333,8 +382,15 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
       {/* Mobile sticky buy bar — right-padded so it clears the floating WhatsApp button. */}
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-line bg-white py-3 pl-4 pr-[5.5rem] shadow-stickybar lg:hidden">
         <div>
-          <div className="font-serif text-[1.15rem] text-oxblood">
-            {price ?? "Rs."}
+          <div className="flex items-baseline gap-2">
+            {listPrice ? (
+              <span className="text-[0.8rem] text-muted line-through">
+                {listPrice}
+              </span>
+            ) : null}
+            <span className="font-serif text-[1.15rem] text-oxblood">
+              {price ?? "Rs."}
+            </span>
           </div>
           {price ? null : <PendingNote label="Price pending" className="mt-1" />}
           <div className="mt-1 text-[0.8rem] text-muted">{product.sizeMl} ml</div>
