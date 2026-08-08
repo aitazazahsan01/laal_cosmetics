@@ -17,6 +17,9 @@ build/
 # local payment-screenshot uploads (swaps for Cloudflare R2 in production — see lib/uploads.ts)
 /uploads/
 
+# local product-photo uploads (swaps for Cloudflare R2 in production — see lib/uploads.ts)
+/public/uploads/
+
 # misc
 .DS_Store
 *.pem
