@@ -44,6 +44,16 @@ export type Exclusion = {
 const FRAGRANCE_MARKERS = ["parfum", "fragrance", "aroma"];
 const COLOURANT_MARKERS = ["ci1", "ci2", "ci4", "ci5", "ci6", "ci7", "colorant", "colourant"];
 
+/**
+ * Markers for the additional "never in a LAAL bottle" claims from the LAAL Website Content
+ * Pack §8 that can be verified the same way — by their absence from the INCI string.
+ * "Calomel" is mercurous chloride, the INCI/pharmacopoeial name mercury is sometimes listed
+ * under.
+ */
+const MERCURY_MARKERS = ["mercury", "calomel"];
+const HYDROQUINONE_MARKERS = ["hydroquinone"];
+const RETINOIC_ACID_MARKERS = ["retinoic"];
+
 function containsMarker(products: Product[], markers: string[]): boolean {
   return products.some((product) =>
     parseInci(product.inciList).some((ingredient) => {
@@ -69,6 +79,27 @@ export function deriveExclusions(products: Product[]): Exclusion[] {
       label: "No added dye or colourant",
       basis,
       verified: !containsMarker(products, COLOURANT_MARKERS),
+    },
+    {
+      label: "No mercury compounds",
+      basis,
+      verified: !containsMarker(products, MERCURY_MARKERS),
+    },
+    {
+      label: "No hydroquinone",
+      basis,
+      verified: !containsMarker(products, HYDROQUINONE_MARKERS),
+    },
+    {
+      label: "No retinoic acid",
+      basis,
+      verified: !containsMarker(products, RETINOIC_ACID_MARKERS),
+    },
+    {
+      // Not an INCI check — a standing brand/policy commitment, Content Pack §8.
+      label: "No topical corticosteroids",
+      basis: "Site-wide rule, Content Pack §8",
+      verified: true,
     },
     {
       // Not an INCI check — a standing brand/site rule from the SRS.
