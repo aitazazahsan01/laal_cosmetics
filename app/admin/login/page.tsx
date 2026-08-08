@@ -75,7 +75,14 @@ export default async function AdminLoginPage({
             </p>
           ) : null}
 
-          {params.error ? (
+          {params.error === "throttled" ? (
+            <p
+              role="alert"
+              className="mt-4 rounded border border-ruby bg-ruby/[0.06] px-3 py-2 text-[0.85rem] text-ruby"
+            >
+              Too many attempts. Please wait a few minutes and try again.
+            </p>
+          ) : params.error ? (
             <p
               role="alert"
               className="mt-4 rounded border border-ruby bg-ruby/[0.06] px-3 py-2 text-[0.85rem] text-ruby"

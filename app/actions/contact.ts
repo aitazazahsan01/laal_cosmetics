@@ -3,6 +3,7 @@
 import { sendContactMessageEmail } from "@/lib/email";
 import type { FormState } from "@/lib/form-state";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 /**
  * General contact submission.
@@ -21,6 +22,27 @@ export async function submitContactMessageAction(
   _prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  // Honeypot: a hidden field a real visitor never sees or fills. A bot that fills every field
+  // programmatically trips it. Pretend success without persisting anything or notifying
+  // anyone — never reveal to the submitter that it was caught.
+  if (text(formData, "company_website")) {
+    return { status: "success", message: text(formData, "name") || "there", fieldErrors: {} };
+  }
+
+  const ip = await getClientIp();
+  const { allowed } = await checkRateLimit(`contact:ip:${ip}`, {
+    max: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!allowed) {
+    return {
+      status: "error",
+      message:
+        "Too many submissions from this connection — please try again in a while.",
+      fieldErrors: {},
+    };
+  }
+
   const fieldErrors: Record<string, string> = {};
 
   const name = text(formData, "name");

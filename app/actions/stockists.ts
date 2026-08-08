@@ -3,6 +3,7 @@
 import { sendStockistEnquiryEmail } from "@/lib/email";
 import { BUSINESS_TYPES, type FormState } from "@/lib/form-state";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 /**
  * Stockist / wholesale enquiry submission.
@@ -24,6 +25,31 @@ export async function submitStockistEnquiryAction(
   _prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  // Honeypot: a hidden field a real visitor never sees or fills. Pretend success without
+  // persisting anything or notifying anyone — never reveal to the submitter that it was
+  // caught.
+  if (text(formData, "company_website")) {
+    return {
+      status: "success",
+      message: text(formData, "businessName") || "there",
+      fieldErrors: {},
+    };
+  }
+
+  const ip = await getClientIp();
+  const { allowed } = await checkRateLimit(`stockist:ip:${ip}`, {
+    max: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!allowed) {
+    return {
+      status: "error",
+      message:
+        "Too many submissions from this connection — please try again in a while.",
+      fieldErrors: {},
+    };
+  }
+
   const fieldErrors: Record<string, string> = {};
 
   const businessName = text(formData, "businessName");

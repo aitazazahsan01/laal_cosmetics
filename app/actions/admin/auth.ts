@@ -12,6 +12,7 @@ import {
 } from "@/lib/auth";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { SITE } from "@/lib/config";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 /**
  * Admin auth actions.
@@ -39,6 +40,28 @@ export async function loginAction(formData: FormData): Promise<void> {
 
   if (!email || !password) {
     redirect(`/admin/login?error=1&next=${encodeURIComponent(next)}`);
+  }
+
+  // Rate-limit on both the requesting IP and the submitted email, independently, before every
+  // attempt — success or failure — since the limiter's job is "how many times has this key
+  // tried," full stop. This is checked before authenticate() so a throttled attempt never even
+  // reaches the bcrypt compare.
+  const ip = await getClientIp();
+  const [ipLimit, emailLimit] = await Promise.all([
+    checkRateLimit(`login:ip:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 }),
+    checkRateLimit(`login:email:${email.toLowerCase()}`, {
+      max: 5,
+      windowMs: 15 * 60 * 1000,
+    }),
+  ]);
+
+  if (!ipLimit.allowed || !emailLimit.allowed) {
+    // Safe to be a distinct message here (unlike the generic auth error): it depends only on
+    // request volume, not on whether the account exists, so it doesn't reopen the
+    // user-enumeration hole GENERIC_LOGIN_ERROR closes.
+    redirect(
+      `/admin/login?error=throttled&next=${encodeURIComponent(next)}`,
+    );
   }
 
   const result = await authenticate(email, password);

@@ -46,6 +46,23 @@ export function ContactForm() {
         </div>
       ) : null}
 
+      {/*
+        Honeypot: real visitors never see this (display:none, not just visually hidden — using
+        sr-only here would expose it to screen-reader users, which we don't want), but a bot
+        that fills every field programmatically trips it. Server action checks it and pretends
+        success without persisting or notifying anyone.
+      */}
+      <div className="hidden" aria-hidden="true">
+        <label htmlFor="company_website">Company website</label>
+        <input
+          id="company_website"
+          name="company_website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       <div className="grid grid-cols-1 gap-[1.1rem]">
         <TextField
           name="name"

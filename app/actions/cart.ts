@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { MAX_QTY_PER_LINE, readCart, writeCart } from "@/lib/cart";
 import { validateDiscountCode } from "@/lib/discounts";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 /**
  * Cart mutations.
@@ -118,6 +119,22 @@ export async function applyDiscountAction(
     await writeCart(cart);
     refresh();
     return { message: null, applied: false };
+  }
+
+  // Rate-limit code guessing. On exceeding, fall back to the same "invalid code" shape a real
+  // wrong guess produces — a distinct throttle message here would itself leak that
+  // code-guessing is a live attack surface worth continuing to try later.
+  const ip = await getClientIp();
+  const { allowed } = await checkRateLimit(`discount:ip:${ip}`, {
+    max: 20,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!allowed) {
+    const cart = await readCart();
+    cart.discountCode = null;
+    await writeCart(cart);
+    refresh();
+    return { message: "That code isn't recognised.", applied: false };
   }
 
   // Validate against the current subtotal so minimum-spend rules are honoured.

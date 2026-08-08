@@ -304,3 +304,18 @@ model AdminPasswordResetToken {
 
   @@index([adminUserId])
 }
+
+/// A single hit recorded against a rate-limit key (e.g. "login:ip:1.2.3.4",
+/// "login:email:x@y.com", "contact:ip:1.2.3.4"). lib/rateLimit.ts counts rows within a
+/// sliding window to decide whether a new attempt is allowed, and opportunistically prunes
+/// old rows so this table does not grow unbounded.
+///
+/// DB-backed rather than in-memory because the confirmed hosting target is Vercel serverless
+/// — in-memory counters do not survive across invocations.
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
