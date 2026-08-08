@@ -17,8 +17,17 @@ export function CartLineItem({ line }: { line: PricedLine }) {
 
   return (
     <div className="grid grid-cols-[auto_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
-      <div>
-        <BottleMark variant="front" height={96} />
+      <div className="flex h-[96px] w-[96px] items-center justify-center">
+        {line.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={line.imageUrl}
+            alt={line.name}
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <BottleMark variant="front" height={96} />
+        )}
       </div>
 
       <div>

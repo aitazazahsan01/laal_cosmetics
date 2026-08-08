@@ -99,6 +99,7 @@ export async function createOrder(
           tagline: product.tagline,
           activesLine: product.activesLine,
           sizeMl: product.sizeMl,
+          imageUrl: null, // Not rendered on this path — OrderSummary is text-only.
           quantity: item.quantity,
           unitPriceRs,
           priceSupplied: product.priceRs !== null,

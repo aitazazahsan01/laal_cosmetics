@@ -25,6 +25,8 @@ export type PricedLine = {
   tagline: string;
   activesLine: string;
   sizeMl: number;
+  /** First product image, if any — null falls back to the line-art placeholder. */
+  imageUrl: string | null;
   quantity: number;
   /** 0 when LAAL has not supplied a price — see `priceSupplied`. */
   unitPriceRs: number;

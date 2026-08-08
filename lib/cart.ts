@@ -175,6 +175,16 @@ export async function getCartView(
     if (quantity <= 0) continue;
 
     const unitPriceRs = product.priceRs ?? 0;
+    let firstImage: string | null = null;
+    try {
+      const parsed = product.imageUrls ? JSON.parse(product.imageUrls) : [];
+      if (Array.isArray(parsed) && typeof parsed[0] === "string") {
+        firstImage = parsed[0];
+      }
+    } catch {
+      firstImage = null;
+    }
+
     lines.push({
       productId: product.id,
       slug: product.slug,
@@ -182,6 +192,7 @@ export async function getCartView(
       tagline: product.tagline,
       activesLine: product.activesLine,
       sizeMl: product.sizeMl,
+      imageUrl: firstImage,
       quantity,
       unitPriceRs,
       priceSupplied: product.priceRs !== null,
