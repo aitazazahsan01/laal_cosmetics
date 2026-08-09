@@ -1,6 +1,6 @@
 # Project Progress
 
-**Last updated:** 2026-08-09 (afternoon)
+**Last updated:** 2026-08-09 (evening)
 **Status:** Core build complete (Phases 1–5 of the build plan) and deployed to Vercel with a live Postgres database (via Vercel's Supabase integration). Waiting on real-world credentials and a handful of outstanding content items from LAAL before the remaining pending features go live.
 
 This file is the working status tracker for the build — updated alongside each phase rather than written once at the end. If you're picking this project back up after a gap, read this before assuming anything about what exists.
@@ -24,6 +24,10 @@ This file is the working status tracker for the build — updated alongside each
 - Home page hero trust strip: "No fairness claims. Ever." now uses a real supplied icon image (`no.jpg`); "Every ingredient printed." stays on the plain SVG checkmark — a supplied replacement (`yes.jpg`) carries a visible pngtree.com watermark and was withheld (see judgment calls below)
 - Home page: a continuously-scrolling `MarqueeStrip` below the header (UX pattern borrowed from a competitor reference site, content is not — see [[laal_brand_assets]]), reusing the same five real facts already stated elsewhere on the page (INCI-printed, PCSIR-tested, no fairness claims, COD nationwide, guest checkout). Pauses on hover/focus, stops under `prefers-reduced-motion`, and is `aria-hidden` since the same facts are already accessible as static text in the page's other trust sections
 - Cart drawer: adding an item now opens a slide-over showing what's actually in the cart, instead of giving no feedback — fixes a real reported UX gap (users double-adding items because nothing visibly happened)
+- Free-delivery progress bar ("Add Rs. X more for free delivery") in the cart drawer, cart page and checkout summary, driven by the real `DeliverySettings.freeDeliveryThresholdRs` — renders nothing if that's ever unset again
+- Product pages: the mobile sticky buy bar now only appears once the main buy box scrolls out of view (IntersectionObserver), instead of being permanently fixed and covering content
+- Wishlist: heart-icon toggle on every product card and product page, no account needed — saved in the browser (localStorage) rather than the server, since nothing about it needs price truth the way the cart does. `/wishlist` page lists saved products
+- Footer newsletter signup — email capture into a new `NewsletterSubscriber` table; sends nothing until Resend is configured, same wired-but-inert pattern as the rest of Phase 5
 - Real page copy throughout: hero, trust strip, "why LAAL," About page brand story, all four policy pages, a shared 12-question FAQ on both product pages, exact SEO title/description pairs on six pages
 - Ingredients page actives/exclusions are **computed at render time** from the seeded INCI data, not hand-typed — a reformulation would change the claims automatically instead of silently going stale
 
@@ -61,6 +65,7 @@ Every one of these is fully implemented at the correct call site and does the co
 - **Cloudflare R2** — needs an account and a bucket
 - **GA4 measurement ID** and **Meta Pixel ID**
 - ~~Postgres connection string~~ — **done 2026-08-09**. Provisioned via Vercel's Supabase integration, `prisma/schema.prisma` now targets `postgresql` (pooled `POSTGRES_PRISMA_URL` for queries, direct `POSTGRES_URL_NON_POOLING` for schema pushes — the standard pattern for Postgres behind a connection pooler on serverless). Vercel's own copies of these vars are used automatically at build time; local dev needs the same two values pasted into `.env` from Supabase's own dashboard (Vercel marks them "Sensitive," which makes them unreadable — not just hidden — in Vercel's own UI once saved, so they can only be retrieved from Supabase directly)
+- **New `NewsletterSubscriber` table (2026-08-09) hasn't been pushed to the live database yet** — it lands automatically on the next Vercel deploy via the existing `prisma db push && prisma db seed && next build` build command, no manual step needed. Not verified end-to-end locally, since local dev is still blocked on the Postgres env vars above — same limitation, not a new one
 
 ### Waiting on content (from LAAL)
 - Manufacturer's registered name (About page "Manufactured by" row)
