@@ -9,6 +9,7 @@ import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { WishlistProvider } from "@/components/wishlist/WishlistProvider";
 import { SITE } from "@/lib/config";
 
 /**
@@ -92,13 +93,15 @@ fbq('track', 'PageView');`}
               </Script>
             ) : null}
 
-            <CartDrawerProvider>
-              <Header />
-              {children}
-              <Footer />
-              <WhatsAppFloat />
-              <CartDrawer />
-            </CartDrawerProvider>
+            <WishlistProvider>
+              <CartDrawerProvider>
+                <Header />
+                {children}
+                <Footer />
+                <WhatsAppFloat />
+                <CartDrawer />
+              </CartDrawerProvider>
+            </WishlistProvider>
           </>
         )}
       </body>

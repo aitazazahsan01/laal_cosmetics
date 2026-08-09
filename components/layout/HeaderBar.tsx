@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 
 import { PRIMARY_NAV } from "@/lib/config";
+import { useWishlist } from "@/components/wishlist/WishlistProvider";
 
 /**
  * The interactive part of the header.
@@ -24,6 +25,7 @@ export function HeaderBar({ cartCount }: { cartCount: number }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const menuId = useId();
+  const { count: wishlistCount } = useWishlist();
 
   useEffect(() => {
     setOpen(false);
@@ -85,6 +87,29 @@ export function HeaderBar({ cartCount }: { cartCount: number }) {
         </nav>
 
         <div className="flex items-center gap-4">
+          <Link
+            href="/wishlist"
+            className={`flex items-center gap-[0.4rem] text-[0.82rem] font-semibold ${
+              wishlistCount > 0 ? "text-ruby" : "text-ink"
+            }`}
+            aria-label={`Wishlist, ${wishlistCount} ${wishlistCount === 1 ? "item" : "items"}`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={wishlistCount > 0 ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 20.5s-7.5-4.6-10-9.3C.5 7.8 2.2 4.5 5.4 4c2.1-.3 4 .8 6.6 3.2C14.6 4.8 16.5 3.7 18.6 4c3.2.5 4.9 3.8 3.4 7.2-2.5 4.7-10 9.3-10 9.3z" />
+            </svg>
+            <span aria-hidden="true">{wishlistCount}</span>
+          </Link>
+
           <Link
             href="/cart"
             className={`flex items-center gap-[0.4rem] text-[0.82rem] font-semibold ${

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { formatRs, type ProductView } from "@/lib/products";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
+import { WishlistButton } from "@/components/product/WishlistButton";
 import { BottleMark } from "@/components/ui/BottleMark";
 import { PendingNote } from "@/components/ui/PendingNote";
 import { ProductName } from "@/components/ui/ProductName";
@@ -31,7 +32,13 @@ export function ProductCard({
   const thumbnail = product.imageUrls[0];
 
   return (
-    <article className="flex flex-col rounded-card border border-line bg-white p-8">
+    <article className="relative flex flex-col rounded-card border border-line bg-white p-8">
+      <WishlistButton
+        slug={product.slug}
+        productName={product.name}
+        className="absolute right-4 top-4 z-10"
+      />
+
       <div className="mb-2 flex h-[168px] items-center justify-center self-center">
         {thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element

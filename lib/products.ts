@@ -86,6 +86,19 @@ export async function getProductBySlug(
   return product ? toProductView(product) : null;
 }
 
+/** Used by the wishlist page, where the slug list comes from the client's localStorage. */
+export async function getProductsBySlugs(slugs: string[]): Promise<ProductView[]> {
+  if (slugs.length === 0) return [];
+  const products = await prisma.product.findMany({
+    where: { slug: { in: slugs }, isActive: true },
+  });
+  const views = products.map(toProductView);
+  // Preserve the caller's order (most-recently-saved-first from the wishlist) rather than
+  // whatever order the database happens to return.
+  const bySlug = new Map(views.map((view) => [view.slug, view]));
+  return slugs.map((slug) => bySlug.get(slug)).filter((v): v is ProductView => Boolean(v));
+}
+
 export async function getDeliverySettings() {
   return prisma.deliverySettings.findUnique({ where: { id: "default" } });
 }
