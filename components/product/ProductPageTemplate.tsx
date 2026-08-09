@@ -6,6 +6,8 @@ import type { ReactNode } from "react";
 import { formatRs, getProductBySlug } from "@/lib/products";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
 import { ProductGallery } from "@/components/product/ProductGallery";
+import { StickyBuyBar } from "@/components/product/StickyBuyBar";
+import { WishlistButton } from "@/components/product/WishlistButton";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import { BottleMark } from "@/components/ui/BottleMark";
 import { PendingNote } from "@/components/ui/PendingNote";
@@ -166,7 +168,7 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
               {product.descriptor}
             </p>
 
-            <div className="mt-6 border-y border-line py-[1.1rem]">
+            <div id="buy-box" className="mt-6 border-y border-line py-[1.1rem]">
               <div className="flex flex-wrap items-baseline gap-3">
                 {price ? (
                   <>
@@ -192,12 +194,19 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
                 {product.sizeMl} ml · {product.stockLabel}
               </div>
 
-              <AddToCartButton
-                slug={product.slug}
-                inStock={product.inStock}
-                fullWidth
-                className="mt-4"
-              />
+              <div className="mt-4 flex items-stretch gap-3">
+                <AddToCartButton
+                  slug={product.slug}
+                  inStock={product.inStock}
+                  fullWidth
+                  className="flex-grow"
+                />
+                <WishlistButton
+                  slug={product.slug}
+                  productName={product.name}
+                  className="flex-none"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -390,24 +399,14 @@ export async function ProductPageTemplate({ slug }: { slug: string }) {
         </Section>
       </div>
 
-      {/* Mobile sticky buy bar — right-padded so it clears the floating WhatsApp button. */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-line bg-white py-3 pl-4 pr-[5.5rem] shadow-stickybar lg:hidden">
-        <div>
-          <div className="flex items-baseline gap-2">
-            {listPrice ? (
-              <span className="text-[0.8rem] text-muted line-through">
-                {listPrice}
-              </span>
-            ) : null}
-            <span className="font-serif text-[1.15rem] text-oxblood">
-              {price ?? "Rs."}
-            </span>
-          </div>
-          {price ? null : <PendingNote label="Price pending" className="mt-1" />}
-          <div className="mt-1 text-[0.8rem] text-muted">{product.sizeMl} ml</div>
-        </div>
-        <AddToCartButton slug={product.slug} inStock={product.inStock} />
-      </div>
+      {/* Mobile sticky buy bar — only appears once #buy-box above has scrolled out of view. */}
+      <StickyBuyBar
+        slug={product.slug}
+        inStock={product.inStock}
+        sizeMl={product.sizeMl}
+        price={price}
+        listPrice={listPrice}
+      />
     </main>
   );
 }
