@@ -39,12 +39,16 @@ const HERO_TRUST_POINTS: { icon: TrustBadgeIconRef; lead: string; body: string }
     body: "Both serums tested at PCSIR Laboratories, Islamabad. Mercury: not detectable.",
   },
   {
+    // A supplied "yes.jpg" image for this point carries a visible tiled "pngtree" watermark
+    // (an unlicensed stock-preview image, not a paid/cleared asset) — shipping it would put a
+    // third party's watermark on the live site and is a real copyright/licensing exposure, so
+    // it was left on the plain SVG. Swap it in once a clean, unwatermarked image exists.
     icon: "document",
     lead: "Every ingredient printed.",
     body: "Full INCI on every bottle, every box and every product page.",
   },
   {
-    icon: "ban",
+    icon: { image: "/brand/no.jpg", alt: "No fairness claims" },
     lead: "No fairness claims. Ever.",
     body: "We do not sell skin lightening, and we never will.",
   },
