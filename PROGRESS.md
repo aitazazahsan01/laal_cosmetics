@@ -1,7 +1,7 @@
 # Project Progress
 
-**Last updated:** 2026-08-08
-**Status:** Core build complete (Phases 1–5 of the build plan). Live and independently verified against a real production build. Waiting on real-world credentials and a handful of outstanding content items from LAAL before the remaining pending features go live.
+**Last updated:** 2026-08-09
+**Status:** Core build complete (Phases 1–5 of the build plan) and deployed to Vercel with a live Postgres database (via Vercel's Supabase integration). Waiting on real-world credentials and a handful of outstanding content items from LAAL before the remaining pending features go live.
 
 This file is the working status tracker for the build — updated alongside each phase rather than written once at the end. If you're picking this project back up after a gap, read this before assuming anything about what exists.
 
@@ -9,10 +9,17 @@ This file is the working status tracker for the build — updated alongside each
 
 ## What's done
 
+### Deployment
+- Live on Vercel, backed by a real Postgres database (Vercel's Supabase integration — `POSTGRES_PRISMA_URL` pooled for queries, `POSTGRES_URL_NON_POOLING` direct for `prisma db push`/seed, both injected by Vercel automatically at build time)
+- Build Command overridden to `prisma db push && prisma db seed && next build`, so the schema and real product/admin data stay in sync on every deploy
+- Local dev now points at the same hosted database (no separate local Postgres) — connection strings live in the Supabase dashboard, not Vercel's (Vercel marks them "Sensitive," which makes them write-only/unreadable there once saved)
+
 ### Storefront
 - Home, Shop, both product pages (Niacinamide+, Hyaluronic+ — one shared template), About, Ingredients, Stockists, Contact, and four policy pages (Shipping, Returns, Privacy, Terms)
 - Real product photography wired in everywhere a product renders (product galleries, shop/home cards, the cross-sell "pairs with" card, cart line items)
 - Real prices with strikethrough list pricing (`Rs. 2,099` → `Rs. 1,784`), real delivery fee/threshold/COD surcharge, real WhatsApp number and Easypaisa account, real address
+- Reusable `TrustBadge` component showing LAAL's three real certification/testing facts (ISO 22716:2007, ISO 9001:2015, PCSIR-tested — no Halal, since LAAL has never claimed one) as icon-forward cards on About and Home, and compact chips in the footer
+- Cart drawer: adding an item now opens a slide-over showing what's actually in the cart, instead of giving no feedback — fixes a real reported UX gap (users double-adding items because nothing visibly happened)
 - Real page copy throughout: hero, trust strip, "why LAAL," About page brand story, all four policy pages, a shared 12-question FAQ on both product pages, exact SEO title/description pairs on six pages
 - Ingredients page actives/exclusions are **computed at render time** from the seeded INCI data, not hand-typed — a reformulation would change the claims automatically instead of silently going stale
 
