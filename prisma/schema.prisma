@@ -312,6 +312,19 @@ model AdminPasswordResetToken {
   @@index([adminUserId])
 }
 
+/// Footer newsletter signup. Just an email capture for now — no welcome email is sent (Resend
+/// is inert until configured, same as everywhere else), and nothing else reads this table yet.
+/// Upserted rather than erroring on a repeat signup, same "don't leak account existence" spirit
+/// as the discount-code and login flows.
+model NewsletterSubscriber {
+  id    String @id @default(cuid())
+  email String @unique
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 /// A single hit recorded against a rate-limit key (e.g. "login:ip:1.2.3.4",
 /// "login:email:x@y.com", "contact:ip:1.2.3.4"). lib/rateLimit.ts counts rows within a
 /// sliding window to decide whether a new attempt is allowed, and opportunistically prunes

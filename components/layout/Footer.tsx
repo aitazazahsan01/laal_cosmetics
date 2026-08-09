@@ -11,6 +11,7 @@ import {
   WHATSAPP_CONFIGURED,
   WHATSAPP_URL,
 } from "@/lib/config";
+import { NewsletterForm } from "@/components/layout/NewsletterForm";
 import { PendingNote } from "@/components/ui/PendingNote";
 import { CERTIFICATION_FACTS, TrustBadge } from "@/components/ui/TrustBadge";
 
@@ -101,6 +102,13 @@ export function Footer() {
                 variant="chip"
               />
             ))}
+          </div>
+
+          <div className="mt-7">
+            <h4 className="mb-3 text-[0.72rem] uppercase tracking-[0.12em] text-blush">
+              Get updates
+            </h4>
+            <NewsletterForm />
           </div>
         </div>
 
