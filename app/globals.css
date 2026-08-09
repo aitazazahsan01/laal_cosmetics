@@ -62,4 +62,30 @@
   .shell-narrow {
     @apply mx-auto w-full max-w-page px-5;
   }
+
+  /* MarqueeStrip — see components/ui/MarqueeStrip.tsx. Track holds two copies of the content
+     back to back; translating exactly -50% loops seamlessly at any content width. */
+  .marquee-track {
+    animation: marquee 26s linear infinite;
+  }
+
+  .marquee-viewport:hover .marquee-track,
+  .marquee-viewport:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
 }
