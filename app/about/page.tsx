@@ -4,6 +4,7 @@ import { deriveExclusions } from "@/lib/ingredients";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PendingNote } from "@/components/ui/PendingNote";
+import { CERTIFICATION_FACTS, TrustBadge } from "@/components/ui/TrustBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,9 @@ export const metadata: Metadata = {
  *    are real, from the LAAL Website Content Pack §8.
  *  - The manufacturer's own registered name is still explicitly "still to come" (Content Pack
  *    §13.4), so that row stays a <PendingNote> rather than a guess.
+ *  - The certification/testing facts (ISO 22716:2007, ISO 9001:2015, PCSIR testing) render as
+ *    <TrustBadge> cards from the shared CERTIFICATION_FACTS list in components/ui/TrustBadge.tsx
+ *    — the same three facts and no others, kept in sync with the footer.
  *  - "What's never in a LAAL bottle" is COMPUTED from both products' INCI lists at render
  *    time (lib/ingredients.ts) — the absence claims are only shown when the code has actually
  *    verified the absence, so a reformulation cannot leave a false claim on the page.
@@ -97,6 +101,18 @@ export default async function AboutPage() {
           expiry date are printed on the base of every bottle.
         </p>
 
+        {/* Certification & testing — three distinct facts, not buried in prose */}
+        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {CERTIFICATION_FACTS.map((fact) => (
+            <TrustBadge
+              key={fact.heading}
+              icon={fact.icon}
+              heading={fact.heading}
+              body={fact.body}
+            />
+          ))}
+        </div>
+
         <dl className="mt-6 grid max-w-[62ch] grid-cols-[auto_1fr] gap-x-6 gap-y-3 rounded-panel border border-line bg-blush p-7 text-[0.92rem]">
           <dt className="text-muted">Manufactured by</dt>
           <dd>
@@ -112,15 +128,6 @@ export default async function AboutPage() {
           <dt className="text-muted">Shelf life once opened</dt>
           <dd>6 months</dd>
         </dl>
-
-        <div className="mt-5 max-w-[62ch] rounded-card border border-line bg-blush p-5 text-[0.9rem]">
-          <strong className="text-oxblood">Independently tested.</strong>{" "}
-          Both formulations were submitted to PCSIR Laboratories Islamabad —
-          a Government of Pakistan laboratory — before a single bottle was
-          sold. Patch test: negative, both serums. pH: 5.50 and 5.88,
-          skin-compatible. Mercury: not detectable. Yeast and mould: not
-          detectable. Report available on request.
-        </div>
       </section>
 
       {/* Exclusions — computed against the real INCI lists */}

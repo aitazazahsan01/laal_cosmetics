@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ButtonLink } from "@/components/ui/Button";
+import { TrustBadge, type TrustBadgeIcon } from "@/components/ui/TrustBadge";
 
 // Stock and catalogue content come straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -31,16 +32,19 @@ export const metadata: Metadata = {
  *  - Closing block: real copy from the Content Pack §4.
  */
 
-const HERO_TRUST_POINTS = [
+const HERO_TRUST_POINTS: { icon: TrustBadgeIcon; lead: string; body: string }[] = [
   {
+    icon: "flask",
     lead: "Independently tested.",
     body: "Both serums tested at PCSIR Laboratories, Islamabad. Mercury: not detectable.",
   },
   {
+    icon: "document",
     lead: "Every ingredient printed.",
     body: "Full INCI on every bottle, every box and every product page.",
   },
   {
+    icon: "ban",
     lead: "No fairness claims. Ever.",
     body: "We do not sell skin lightening, and we never will.",
   },
@@ -123,14 +127,17 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Trust strip — directly under the hero, three short items */}
+      {/* Trust strip — directly under the hero, three short items, icon-forward so it can't
+          be skimmed past. Copy is unchanged from the previous plain-text version. */}
       <section className="border-b border-line">
-        <div className="shell grid grid-cols-1 gap-8 py-12 md:grid-cols-3">
+        <div className="shell grid grid-cols-1 gap-6 py-12 md:grid-cols-3">
           {HERO_TRUST_POINTS.map((point) => (
-            <div key={point.lead} className="border-t-2 border-ruby pt-4">
-              <h2 className="text-[1.02rem] font-bold">{point.lead}</h2>
-              <p className="mt-2 text-[0.92rem] text-muted">{point.body}</p>
-            </div>
+            <TrustBadge
+              key={point.lead}
+              icon={point.icon}
+              heading={point.lead}
+              body={point.body}
+            />
           ))}
         </div>
       </section>

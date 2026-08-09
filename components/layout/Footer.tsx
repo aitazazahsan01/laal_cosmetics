@@ -9,6 +9,7 @@ import {
   WHATSAPP_URL,
 } from "@/lib/config";
 import { PendingNote } from "@/components/ui/PendingNote";
+import { CERTIFICATION_FACTS, TrustBadge } from "@/components/ui/TrustBadge";
 
 /**
  * Site footer — oxblood background.
@@ -94,6 +95,21 @@ export function Footer() {
                 <InstagramIcon />
               </span>
             )}
+          </div>
+
+          {/* Certification & testing chips — same three facts as the About page, kept in
+              sync via the shared CERTIFICATION_FACTS list. No payment-network logos (LAAL
+              takes no card payments) and no social icons beyond WhatsApp/Instagram above. */}
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            {CERTIFICATION_FACTS.map((fact) => (
+              <TrustBadge
+                key={fact.heading}
+                icon={fact.icon}
+                heading={fact.shortLabel}
+                tone="onDark"
+                variant="chip"
+              />
+            ))}
           </div>
         </div>
 
