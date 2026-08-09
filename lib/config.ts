@@ -42,6 +42,13 @@ export const CONTACT_EMAIL: string | null = null;
  */
 export const INSTAGRAM_URL: string | null = null;
 
+/**
+ * TODO(LAAL): Facebook page and LinkedIn company page URLs — neither has been supplied.
+ * Same inert-until-configured pattern as INSTAGRAM_URL above.
+ */
+export const FACEBOOK_URL: string | null = null;
+export const LINKEDIN_URL: string | null = null;
+
 /** Primary navigation. Every route here is built. */
 export const PRIMARY_NAV = [
   { label: "Niacinamide+", href: "/niacinamide" },

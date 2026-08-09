@@ -10,11 +10,9 @@ import type { ReactNode } from "react";
  * Pack §4) — passed in directly by the caller rather than through `CERTIFICATION_FACTS`.
  *
  * Icons are either simple inline line-art SVGs (matching the stroke/currentColor convention
- * already used by the Instagram glyph in Footer.tsx) or a supplied raster image — but only
+ * already used by the social glyphs in Footer.tsx) or a supplied raster image — but only
  * when that image is actually accurate. Every raster icon used here has been checked to say
- * the correct standard/fact with no unrelated third party's branding on it; a supplied image
- * that didn't meet that bar was deliberately left on the plain SVG instead rather than wired
- * in — see the `icon` value for ISO 22716:2007 in CERTIFICATION_FACTS below.
+ * the correct standard/fact with no unrelated third party's branding on it.
  */
 
 export type TrustBadgeIcon = "shieldCheck" | "ribbon" | "flask" | "document" | "ban";
@@ -189,11 +187,11 @@ export function TrustBadge({
  * `shortLabel` is for the footer's compact chip row; `heading`/`body` are for the full card
  * used on About and Home.
  *
- * ISO 22716:2007 stays on the plain "shieldCheck" SVG rather than a supplied image
- * (public/brand/iso2007.jpg): that file is actually an "ISO 22000 CERTIFIED" badge — food-safety
- * management, a different standard — carrying an unrelated third-party company's watermark.
- * Wiring it in would put a false certification claim and someone else's logo on the live site,
- * so it was deliberately left out. Swap it in the moment there's an accurate one.
+ * A first supplied image for ISO 22716:2007 (public/brand/iso2007.jpg) was actually an
+ * "ISO 22000 CERTIFIED" badge — food-safety management, a different standard — carrying an
+ * unrelated third-party company's watermark, so it was deliberately left on a plain SVG rather
+ * than wired in. The replacement (public/brand/iso2007.png) reads the correct standard number
+ * with no third-party branding, so it's used below.
  */
 export const CERTIFICATION_FACTS: {
   icon: TrustBadgeIconRef;
@@ -202,7 +200,7 @@ export const CERTIFICATION_FACTS: {
   body: string;
 }[] = [
   {
-    icon: "shieldCheck",
+    icon: { image: "/brand/iso2007.png", alt: "ISO 22716:2007 Certified" },
     shortLabel: "ISO 22716:2007",
     heading: "ISO 22716:2007 Certified",
     body: "Cosmetics Good Manufacturing Practice. LAAL's serums are made in an ISO 22716:2007 certified facility.",

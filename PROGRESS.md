@@ -1,6 +1,6 @@
 # Project Progress
 
-**Last updated:** 2026-08-09
+**Last updated:** 2026-08-09 (afternoon)
 **Status:** Core build complete (Phases 1–5 of the build plan) and deployed to Vercel with a live Postgres database (via Vercel's Supabase integration). Waiting on real-world credentials and a handful of outstanding content items from LAAL before the remaining pending features go live.
 
 This file is the working status tracker for the build — updated alongside each phase rather than written once at the end. If you're picking this project back up after a gap, read this before assuming anything about what exists.
@@ -18,7 +18,8 @@ This file is the working status tracker for the build — updated alongside each
 - Home, Shop, both product pages (Niacinamide+, Hyaluronic+ — one shared template), About, Ingredients, Stockists, Contact, and four policy pages (Shipping, Returns, Privacy, Terms)
 - Real product photography wired in everywhere a product renders (product galleries, shop/home cards, the cross-sell "pairs with" card, cart line items)
 - Real prices with strikethrough list pricing (`Rs. 2,099` → `Rs. 1,784`), real delivery fee/threshold/COD surcharge, real WhatsApp number and Easypaisa account, real address
-- Reusable `TrustBadge` component showing LAAL's three real certification/testing facts (ISO 22716:2007, ISO 9001:2015, PCSIR-tested — no Halal, since LAAL has never claimed one) as icon-forward cards on About and Home, and compact chips in the footer
+- Reusable `TrustBadge` component showing LAAL's three real certification/testing facts (ISO 22716:2007, ISO 9001:2015, PCSIR-tested — no Halal, since LAAL has never claimed one) as icon-forward cards on About and Home, and compact chips in the footer — all three now use LAAL's real certification seal images (the first supplied ISO 22716:2007 image was rejected as inaccurate; see judgment calls below)
+- Footer social/contact icon row: Instagram, Facebook, Email, LinkedIn — each inert (dimmed, "pending" label) until LAAL supplies the real handle/URL, same pattern as WhatsApp/email elsewhere on the site
 - Cart drawer: adding an item now opens a slide-over showing what's actually in the cart, instead of giving no feedback — fixes a real reported UX gap (users double-adding items because nothing visibly happened)
 - Real page copy throughout: hero, trust strip, "why LAAL," About page brand story, all four policy pages, a shared 12-question FAQ on both product pages, exact SEO title/description pairs on six pages
 - Ingredients page actives/exclusions are **computed at render time** from the seeded INCI data, not hand-typed — a reformulation would change the claims automatically instead of silently going stale
@@ -60,7 +61,7 @@ Every one of these is fully implemented at the correct call site and does the co
 
 ### Waiting on content (from LAAL)
 - Manufacturer's registered name (About page "Manufactured by" row)
-- Instagram handle (icon is in place in the footer, inert)
+- Instagram, Facebook and LinkedIn handles/URLs (icons are in place in the footer, inert)
 - Customer testimonials (none exist anywhere — will never be fabricated)
 - JazzCash and bank transfer account details (only Easypaisa's number was supplied)
 
@@ -81,6 +82,7 @@ Every one of these is fully implemented at the correct call site and does the co
 - **Payment screenshots never go to R2**, even once R2 is configured — R2 is public-by-default in this setup, and putting payment screenshots there without signed URLs would be a real privacy regression from today's authenticated-only behaviour. They stay on local disk behind the authenticated admin route permanently, which is itself a known limitation on Vercel's serverless filesystem (see below).
 - **Local-disk uploads don't persist in production on Vercel** — writes to disk at runtime don't survive between serverless invocations. Product-photo uploads work locally right now (fixed a real bug where they were landing in a private, admin-only path); they need R2 configured before they'll work for real once deployed.
 - **The B3/Pyridoxine "discrepancy"** flagged earlier in the project was a false alarm, not a labelling error — Niacinamide (2nd in Hyaluronic+'s INCI) *is* Vitamin B3, which is what the box's "B3" headline active refers to. No box-art change needed.
+- **A first supplied ISO 22716:2007 image (`iso2007.jpg`) was rejected** — it actually read "ISO 22000 CERTIFIED" (a different, food-safety standard) and carried a third-party company's watermark unrelated to LAAL. It was left out even after the user explicitly said to use it anyway, on the same "never publish a false safety/certification claim" principle applied elsewhere in this project. The replacement the user supplied (`iso2007.png`) reads the correct standard number with no third-party branding and is now live on About, Home and the footer.
 
 ---
 

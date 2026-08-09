@@ -1,9 +1,12 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import {
   CONTACT_EMAIL,
+  FACEBOOK_URL,
   FOOTER_NAV,
   INSTAGRAM_URL,
+  LINKEDIN_URL,
   SITE,
   WHATSAPP_CONFIGURED,
   WHATSAPP_URL,
@@ -75,26 +78,14 @@ export function Footer() {
           </div>
 
           <div className="mt-6 flex items-center gap-3">
-            {INSTAGRAM_URL ? (
-              <a
-                href={INSTAGRAM_URL}
-                className="text-blush/80 hover:text-white"
-                rel="noopener noreferrer"
-                target="_blank"
-                aria-label="LAAL on Instagram"
-              >
-                <InstagramIcon />
-              </a>
-            ) : (
-              <span
-                className="text-blush/40"
-                role="img"
-                aria-label="Instagram — pending, LAAL to supply"
-                title="Instagram — pending, LAAL to supply"
-              >
-                <InstagramIcon />
-              </span>
-            )}
+            <SocialIcon href={INSTAGRAM_URL} label="Instagram" icon={<InstagramIcon />} />
+            <SocialIcon href={FACEBOOK_URL} label="Facebook" icon={<FacebookIcon />} />
+            <SocialIcon
+              href={CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : null}
+              label="Email"
+              icon={<EmailIcon />}
+            />
+            <SocialIcon href={LINKEDIN_URL} label="LinkedIn" icon={<LinkedInIcon />} />
           </div>
 
           {/* Certification & testing chips — same three facts as the About page, kept in
@@ -144,6 +135,48 @@ export function Footer() {
   );
 }
 
+/**
+ * One social/contact icon link — active (real URL/address) or inert (pending, same visual
+ * treatment as the WhatsApp/email "pending" fallbacks above: dimmed, non-interactive, but
+ * still present so the layout doesn't shift once LAAL supplies the missing handle).
+ */
+function SocialIcon({
+  href,
+  label,
+  icon,
+}: {
+  href: string | null;
+  label: string;
+  icon: ReactNode;
+}) {
+  if (!href) {
+    return (
+      <span
+        className="text-blush/40"
+        role="img"
+        aria-label={`${label} — pending, LAAL to supply`}
+        title={`${label} — pending, LAAL to supply`}
+      >
+        {icon}
+      </span>
+    );
+  }
+
+  const isMailto = href.startsWith("mailto:");
+
+  return (
+    <a
+      href={href}
+      className="text-blush/80 hover:text-white"
+      rel={isMailto ? undefined : "noopener noreferrer"}
+      target={isMailto ? undefined : "_blank"}
+      aria-label={`LAAL on ${label}`}
+    >
+      {icon}
+    </a>
+  );
+}
+
 /** Instagram glyph, matching the WhatsApp icon's currentColor / viewBox convention. */
 function InstagramIcon() {
   return (
@@ -159,6 +192,69 @@ function InstagramIcon() {
       <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
       <circle cx="12" cy="12" r="4.6" />
       <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Facebook glyph, same stroke/viewBox convention as the icons above. */
+function FacebookIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15.5 8.5h-2a1.5 1.5 0 0 0-1.5 1.5v2h3.5l-.5 3H12v7" />
+      <circle cx="12" cy="12" r="9.5" />
+    </svg>
+  );
+}
+
+/** Envelope glyph, for the email contact link. */
+function EmailIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <path d="M3.5 6l8.5 6.5L20.5 6" />
+    </svg>
+  );
+}
+
+/** LinkedIn glyph, same stroke/viewBox convention as the icons above. */
+function LinkedInIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="2.5" width="19" height="19" rx="4" />
+      <line x1="7.2" y1="10" x2="7.2" y2="16.8" />
+      <circle cx="7.2" cy="6.6" r="0.4" fill="currentColor" />
+      <path d="M11.6 16.8v-4a2.4 2.4 0 0 1 4.8 0v4" />
+      <line x1="11.6" y1="10" x2="11.6" y2="16.8" />
     </svg>
   );
 }
