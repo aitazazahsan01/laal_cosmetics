@@ -2,31 +2,38 @@
 //
 // PROVIDER NOTE
 // -------------
-// `sqlite` is used for local development only. The schema is deliberately kept free of
-// SQLite-only quirks so that swapping to Postgres for production is a one-line provider
-// change plus a fresh migration:
-//   1. provider = "postgresql"
-//   2. point DATABASE_URL at the hosted database
-//   3. npx prisma migrate dev --name init
+// Postgres, provisioned via Vercel's Supabase integration. Two connection strings are used
+// deliberately, both env vars supplied automatically by that integration (never hand-copied):
+//   - `url`       -> POSTGRES_PRISMA_URL, a pooled (pgbouncer) connection — what the app uses
+//                    for normal queries at runtime, since serverless functions open a lot of
+//                    short-lived connections and Postgres has a hard connection limit.
+//   - `directUrl` -> POSTGRES_URL_NON_POOLING, a direct connection — required for `prisma db
+//                    push`/`migrate`, which need to run DDL that a pgbouncer pooler in
+//                    transaction mode cannot reliably carry.
+// Local development points these same two names at the same hosted database (there is no
+// separate local Postgres) — see .env, values from the Supabase project dashboard, not Vercel
+// (Vercel marks them "Sensitive", which makes them write-only in its own dashboard).
 //
-// Because Prisma does not support `enum` blocks on SQLite, every enum-shaped column is a
-// String with its allowed values documented directly above it. The matching TypeScript
-// union types and value lists live in lib/types.ts and are the single source of truth for
-// application code. On the Postgres swap these can become real enums if desired.
+// Because Prisma does not support `enum` blocks the same way across providers this schema
+// was written without them from the start — every enum-shaped column is a String with its
+// allowed values documented directly above it. The matching TypeScript union types and value
+// lists live in lib/types.ts and are the single source of truth for application code.
 //
 // Money is stored as whole Pakistani Rupees in Int columns (never Float / Decimal), so
-// arithmetic is exact and portable across both providers.
+// arithmetic is exact.
 //
-// JSON-shaped content is stored as a String holding a JSON document. Parsing and typing
-// happen in lib/products.ts. On Postgres these can become `Json` columns.
+// JSON-shaped content is stored as a String holding a JSON document, parsed in lib/products.ts
+// (kept as String rather than Postgres's native `Json` type so it stayed portable back when
+// SQLite was still in play locally).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 // ---------------------------------------------------------------------------

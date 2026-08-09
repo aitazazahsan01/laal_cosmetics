@@ -49,7 +49,7 @@ Every one of these is fully implemented at the correct call site and does the co
 - **A real receiving email address** — LAAL has never supplied *any* email address; `ADMIN_NOTIFICATION_EMAIL` and `CONTACT_EMAIL` (`lib/config.ts`) are both still `null`. Without this, order/contact/stockist notifications have nowhere to send even once Resend is configured
 - **Cloudflare R2** — needs an account and a bucket
 - **GA4 measurement ID** and **Meta Pixel ID**
-- **Postgres connection string** (Neon or Supabase) — needed for the production database swap. Deliberately *not* started yet: flipping `prisma/schema.prisma`'s provider without a real connection string would break local dev entirely. This is a coordinated step (provider change + new `DATABASE_URL` + fresh migration + reseed) best done together, right before actual deployment
+- ~~Postgres connection string~~ — **done 2026-08-09**. Provisioned via Vercel's Supabase integration, `prisma/schema.prisma` now targets `postgresql` (pooled `POSTGRES_PRISMA_URL` for queries, direct `POSTGRES_URL_NON_POOLING` for schema pushes — the standard pattern for Postgres behind a connection pooler on serverless). Vercel's own copies of these vars are used automatically at build time; local dev needs the same two values pasted into `.env` from Supabase's own dashboard (Vercel marks them "Sensitive," which makes them unreadable — not just hidden — in Vercel's own UI once saved, so they can only be retrieved from Supabase directly)
 
 ### Waiting on content (from LAAL)
 - Manufacturer's registered name (About page "Manufactured by" row)
@@ -61,8 +61,7 @@ Every one of these is fully implemented at the correct call site and does the co
 - **"The Pair" bundle pricing** — the content pack specifies both serums together at Rs 3,358 (a real ~Rs 210 saving beyond the two items' already-discounted individual prices, not just their sum). The `/shop` page already has a bundle card, correctly showing "Bundle price pending." Implementing this for real means either a new bundle SKU or automatic cart-level pricing logic, and the content pack asks for it to be admin-configurable — real checkout-math changes, held back for a deliberate decision rather than being built into a content pass.
 
 ### Not started
-- Postgres provider swap + fresh migration (blocked on a real connection string, see above)
-- Actual deployment to Vercel
+- Actual deployment to Vercel — in progress as of 2026-08-09, first deploy hit the expected "no database connected yet" error, now resolved by the Postgres/Supabase wiring above; next redeploy should succeed
 - End-to-end test order placement across all four payment methods on a real device (SRS acceptance criterion)
 - Home page load time under 3 seconds on 4G (SRS acceptance criterion) — not yet measured against a deployed instance
 - Final handover deliverables: source access, hosting/domain credentials, an admin walkthrough, the agreed bug-fix window

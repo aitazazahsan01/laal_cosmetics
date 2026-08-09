@@ -24,7 +24,7 @@ LAAL sells two 30 ml serums — **Niacinamide+** (oil control) and **Hyaluronic+
 |---|---|
 | Framework | Next.js 15 (App Router, Server Actions) |
 | Language | TypeScript |
-| Database | Prisma ORM · SQLite locally, Postgres (Neon/Supabase) in production |
+| Database | Prisma ORM · Postgres, provisioned via Vercel's Supabase integration (one database shared by local dev and production) |
 | Styling | Tailwind CSS, hand-authored design tokens |
 | Auth | Hand-rolled — bcrypt + hashed session tokens, no third-party auth provider |
 | Email | Resend (inert until `RESEND_API_KEY` is set) |
@@ -60,7 +60,7 @@ Visit `http://localhost:3000` for the storefront and `/admin/login` for the admi
 
 Every variable is documented inline in [`.env.example`](./.env.example). In short:
 
-- **Required to run at all**: `DATABASE_URL`, `ADMIN_1_*`/`ADMIN_2_*` (the two staff accounts)
+- **Required to run at all**: `POSTGRES_PRISMA_URL` + `POSTGRES_URL_NON_POOLING` (get both from the Supabase dashboard, not Vercel's — see `.env.example`), `ADMIN_1_*`/`ADMIN_2_*` (the two staff accounts)
 - **Optional, inert until set** — each degrades to a safe no-op or local fallback when absent, never breaks the build: `RESEND_API_KEY` / `EMAIL_FROM` / `ADMIN_NOTIFICATION_EMAIL` (email), `R2_*` (uploads), `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_META_PIXEL_ID` (analytics)
 
 ## Project structure
