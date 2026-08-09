@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { MAX_QTY_PER_LINE, readCart, writeCart } from "@/lib/cart";
+import { MAX_QTY_PER_LINE, getCartView, readCart, writeCart } from "@/lib/cart";
 import { validateDiscountCode } from "@/lib/discounts";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
@@ -97,6 +97,45 @@ export async function removeFromCartAction(formData: FormData): Promise<void> {
   cart.items = cart.items.filter((item) => item.slug !== slug);
   await writeCart(cart);
   refresh();
+}
+
+export type CartSummaryLine = {
+  slug: string;
+  name: string;
+  imageUrl: string | null;
+  quantity: number;
+  unitPriceRs: number;
+  lineTotalRs: number;
+};
+
+export type CartSummary = {
+  lines: CartSummaryLine[];
+  itemCount: number;
+  subtotalRs: number;
+};
+
+/**
+ * Lightweight, client-safe snapshot of the cart, for the cart drawer.
+ *
+ * `getCartView()` is server-only (reads the httpOnly cookie via next/headers), so a client
+ * component cannot call it directly. This wraps it and strips the shape down to just what the
+ * drawer renders — no discount/stock-problem detail, no PaymentMethod-dependent delivery math.
+ * Money figures still come straight from the database via getCartView(), never from the client.
+ */
+export async function getCartSummaryAction(): Promise<CartSummary> {
+  const view = await getCartView();
+  return {
+    lines: view.lines.map((line) => ({
+      slug: line.slug,
+      name: line.name,
+      imageUrl: line.imageUrl,
+      quantity: line.quantity,
+      unitPriceRs: line.unitPriceRs,
+      lineTotalRs: line.lineTotalRs,
+    })),
+    itemCount: view.itemCount,
+    subtotalRs: view.totals.subtotalRs,
+  };
 }
 
 export type DiscountFormState = { message: string | null; applied: boolean };

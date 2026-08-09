@@ -4,6 +4,8 @@ import Script from "next/script";
 
 import "./globals.css";
 import { bodyFont, headingFont } from "./fonts";
+import { CartDrawer } from "@/components/cart/CartDrawer";
+import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
@@ -90,10 +92,13 @@ fbq('track', 'PageView');`}
               </Script>
             ) : null}
 
-            <Header />
-            {children}
-            <Footer />
-            <WhatsAppFloat />
+            <CartDrawerProvider>
+              <Header />
+              {children}
+              <Footer />
+              <WhatsAppFloat />
+              <CartDrawer />
+            </CartDrawerProvider>
           </>
         )}
       </body>
