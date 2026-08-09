@@ -124,6 +124,8 @@ export type CartView = {
   discountError: string | null;
   /** Lines whose requested quantity now exceeds live stock. */
   stockProblems: { slug: string; name: string; requested: number; available: number }[];
+  /** NULL when LAAL has not supplied a free-delivery threshold yet — see FreeDeliveryProgress. */
+  freeDeliveryThresholdRs: number | null;
 };
 
 /**
@@ -145,6 +147,7 @@ export async function getCartView(
       discountCode: cart.discountCode ?? null,
       discountError: null,
       stockProblems: [],
+      freeDeliveryThresholdRs: null,
     };
   }
 
@@ -225,6 +228,7 @@ export async function getCartView(
     discountCode: cart.discountCode ?? null,
     discountError,
     stockProblems,
+    freeDeliveryThresholdRs: delivery?.freeDeliveryThresholdRs ?? null,
   };
 }
 

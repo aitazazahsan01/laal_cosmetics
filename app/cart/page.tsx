@@ -84,6 +84,7 @@ export default async function CartPage() {
             totals={cart.totals}
             provisionalPricing={cart.provisionalPricing}
             discountCode={cart.discountCode}
+            freeDeliveryThresholdRs={cart.freeDeliveryThresholdRs}
           >
             <DiscountForm
               currentCode={cart.discountCode}

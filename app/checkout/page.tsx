@@ -43,6 +43,7 @@ export default async function CheckoutPage() {
         totals={cart.totals}
         provisionalPricing={cart.provisionalPricing}
         discountCode={cart.discountCode}
+        freeDeliveryThresholdRs={cart.freeDeliveryThresholdRs}
       />
     </main>
   );

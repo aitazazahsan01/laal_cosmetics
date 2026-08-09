@@ -6,6 +6,7 @@ import { formatRsExact } from "@/lib/pricing";
 import { useCartDrawer } from "@/components/cart/CartDrawerProvider";
 import { BottleMark } from "@/components/ui/BottleMark";
 import { ButtonLink } from "@/components/ui/Button";
+import { FreeDeliveryProgress } from "@/components/cart/FreeDeliveryProgress";
 
 /**
  * Slide-over cart drawer — feedback right after "Add to cart", not a replacement for /cart.
@@ -80,6 +81,14 @@ export function CartDrawer() {
             &times;
           </button>
         </div>
+
+        {!isEmpty ? (
+          <FreeDeliveryProgress
+            subtotalRs={summary?.subtotalRs ?? 0}
+            thresholdRs={summary?.freeDeliveryThresholdRs ?? null}
+            className="border-b border-line px-6 py-4"
+          />
+        ) : null}
 
         <div className="flex-grow overflow-y-auto px-6 py-4">
           {isEmpty ? (

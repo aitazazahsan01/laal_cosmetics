@@ -31,11 +31,13 @@ export function CheckoutForm({
   totals,
   provisionalPricing,
   discountCode,
+  freeDeliveryThresholdRs,
 }: {
   lines: PricedLine[];
   totals: Totals;
   provisionalPricing: boolean;
   discountCode: string | null;
+  freeDeliveryThresholdRs: number | null;
 }) {
   const [state, formAction, pending] = useActionState(
     placeOrderAction,
@@ -241,6 +243,7 @@ export function CheckoutForm({
         totals={totals}
         provisionalPricing={provisionalPricing}
         discountCode={discountCode}
+        freeDeliveryThresholdRs={freeDeliveryThresholdRs}
         showLineItems
       >
         <button

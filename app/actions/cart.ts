@@ -112,6 +112,8 @@ export type CartSummary = {
   lines: CartSummaryLine[];
   itemCount: number;
   subtotalRs: number;
+  /** NULL when LAAL has not supplied a free-delivery threshold yet. */
+  freeDeliveryThresholdRs: number | null;
 };
 
 /**
@@ -135,6 +137,7 @@ export async function getCartSummaryAction(): Promise<CartSummary> {
     })),
     itemCount: view.itemCount,
     subtotalRs: view.totals.subtotalRs,
+    freeDeliveryThresholdRs: view.freeDeliveryThresholdRs,
   };
 }
 

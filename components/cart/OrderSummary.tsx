@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import { formatRsExact, type PricedLine, type Totals } from "@/lib/pricing";
 import { DemoPricingNote } from "@/components/cart/DemoPricingNote";
+import { FreeDeliveryProgress } from "@/components/cart/FreeDeliveryProgress";
 
 /**
  * The order summary panel, shared by the cart and the checkout so the two can never disagree
@@ -15,6 +16,7 @@ export function OrderSummary({
   provisionalPricing,
   showLineItems = false,
   discountCode,
+  freeDeliveryThresholdRs = null,
   children,
 }: {
   lines: PricedLine[];
@@ -22,11 +24,18 @@ export function OrderSummary({
   provisionalPricing: boolean;
   showLineItems?: boolean;
   discountCode?: string | null;
+  freeDeliveryThresholdRs?: number | null;
   children?: ReactNode;
 }) {
   return (
     <aside className="rounded-panel border border-line bg-blush p-7 lg:sticky lg:top-24">
       <h2 className="font-serif text-[1.1rem]">Order summary</h2>
+
+      <FreeDeliveryProgress
+        subtotalRs={totals.subtotalRs}
+        thresholdRs={freeDeliveryThresholdRs}
+        className="mt-4"
+      />
 
       {showLineItems
         ? lines.map((line) => (
