@@ -9,18 +9,24 @@ import type { ReactNode } from "react";
  * trust strip reuses the same visual component with its own, separately-approved copy (Content
  * Pack §4) — passed in directly by the caller rather than through `CERTIFICATION_FACTS`.
  *
- * Icons are simple inline line-art SVGs, matching the stroke/currentColor convention already
- * used by the Instagram glyph in Footer.tsx. No embedded seal/certificate raster art — LAAL has
- * not supplied any official certification imagery, so nothing here claims to be a scan of one.
+ * Icons are either simple inline line-art SVGs (matching the stroke/currentColor convention
+ * already used by the Instagram glyph in Footer.tsx) or a supplied raster image — but only
+ * when that image is actually accurate. Every raster icon used here has been checked to say
+ * the correct standard/fact with no unrelated third party's branding on it; a supplied image
+ * that didn't meet that bar was deliberately left on the plain SVG instead rather than wired
+ * in — see the `icon` value for ISO 22716:2007 in CERTIFICATION_FACTS below.
  */
 
 export type TrustBadgeIcon = "shieldCheck" | "ribbon" | "flask" | "document" | "ban";
+
+/** A supplied image, used in place of a line-art icon once it's been verified accurate. */
+export type TrustBadgeIconRef = TrustBadgeIcon | { image: string; alt: string };
 
 type Tone = "ruby" | "onDark";
 type Variant = "card" | "chip";
 
 type TrustBadgeProps = {
-  icon: TrustBadgeIcon;
+  icon: TrustBadgeIconRef;
   heading: string;
   /** Supporting sentence. Card variant only — chips show the icon and heading alone. */
   body?: string;
@@ -130,6 +136,22 @@ const toneClasses: Record<Tone, { icon: string; heading: string; body: string; b
   },
 };
 
+/** Renders either a line-art SVG (by name) or a supplied image, at the given box size. */
+function renderIcon(icon: TrustBadgeIconRef, size: number, iconClassName: string): ReactNode {
+  if (typeof icon === "string") {
+    return <span className={iconClassName}>{ICONS[icon](size)}</span>;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={icon.image}
+      alt={icon.alt}
+      style={{ width: size, height: size }}
+      className="flex-none rounded-full object-contain"
+    />
+  );
+}
+
 export function TrustBadge({
   icon,
   heading,
@@ -145,7 +167,7 @@ export function TrustBadge({
       <div
         className={`flex items-center gap-2 rounded-full border px-3 py-[0.35rem] text-[0.72rem] font-medium ${colors.border} ${colors.heading} ${className}`}
       >
-        <span className={colors.icon}>{ICONS[icon](15)}</span>
+        {renderIcon(icon, 15, colors.icon)}
         <span>{heading}</span>
       </div>
     );
@@ -153,7 +175,7 @@ export function TrustBadge({
 
   return (
     <div className={`rounded-card border p-6 ${colors.border} ${className}`}>
-      <span className={colors.icon}>{ICONS[icon](26)}</span>
+      {renderIcon(icon, 26, colors.icon)}
       <h3 className={`mt-3 text-[0.96rem] font-bold ${colors.heading}`}>{heading}</h3>
       {body ? <p className={`mt-2 text-[0.85rem] leading-[1.55] ${colors.body}`}>{body}</p> : null}
     </div>
@@ -166,9 +188,15 @@ export function TrustBadge({
  *
  * `shortLabel` is for the footer's compact chip row; `heading`/`body` are for the full card
  * used on About and Home.
+ *
+ * ISO 22716:2007 stays on the plain "shieldCheck" SVG rather than a supplied image
+ * (public/brand/iso2007.jpg): that file is actually an "ISO 22000 CERTIFIED" badge — food-safety
+ * management, a different standard — carrying an unrelated third-party company's watermark.
+ * Wiring it in would put a false certification claim and someone else's logo on the live site,
+ * so it was deliberately left out. Swap it in the moment there's an accurate one.
  */
 export const CERTIFICATION_FACTS: {
-  icon: TrustBadgeIcon;
+  icon: TrustBadgeIconRef;
   shortLabel: string;
   heading: string;
   body: string;
@@ -180,13 +208,13 @@ export const CERTIFICATION_FACTS: {
     body: "Cosmetics Good Manufacturing Practice. LAAL's serums are made in an ISO 22716:2007 certified facility.",
   },
   {
-    icon: "ribbon",
+    icon: { image: "/brand/iso2015.jpg", alt: "ISO 9001:2015 Certified" },
     shortLabel: "ISO 9001:2015",
     heading: "ISO 9001:2015 Certified",
     body: "Quality Management. The same facility holds ISO 9001:2015 certification.",
   },
   {
-    icon: "flask",
+    icon: { image: "/brand/flask.jpg", alt: "Independently tested" },
     shortLabel: "Independently tested",
     heading: "Independently Tested",
     body: "Both formulations were submitted to PCSIR Laboratories Islamabad — a Government of Pakistan laboratory — before a single bottle was sold. Mercury: not detectable. Patch test: negative.",

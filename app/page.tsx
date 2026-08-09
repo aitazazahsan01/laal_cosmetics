@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ButtonLink } from "@/components/ui/Button";
-import { TrustBadge, type TrustBadgeIcon } from "@/components/ui/TrustBadge";
+import { TrustBadge, type TrustBadgeIconRef } from "@/components/ui/TrustBadge";
 
 // Stock and catalogue content come straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
  *  - Closing block: real copy from the Content Pack §4.
  */
 
-const HERO_TRUST_POINTS: { icon: TrustBadgeIcon; lead: string; body: string }[] = [
+const HERO_TRUST_POINTS: { icon: TrustBadgeIconRef; lead: string; body: string }[] = [
   {
-    icon: "flask",
+    icon: { image: "/brand/flask.jpg", alt: "Independently tested" },
     lead: "Independently tested.",
     body: "Both serums tested at PCSIR Laboratories, Islamabad. Mercury: not detectable.",
   },
