@@ -4,7 +4,7 @@ import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ButtonLink } from "@/components/ui/Button";
 import { MarqueeStrip } from "@/components/ui/MarqueeStrip";
-import { TrustBadge, type TrustBadgeIconRef } from "@/components/ui/TrustBadge";
+import { CERTIFICATION_FACTS, TrustBadge } from "@/components/ui/TrustBadge";
 
 // Stock and catalogue content come straight from the database on every request.
 export const dynamic = "force-dynamic";
@@ -25,35 +25,15 @@ export const metadata: Metadata = {
  *    Content Pack §4.
  *  - Hero image: an AI-rendered product mockup (docs/brand/LAAL_Website_Content_Pack.pdf
  *    §13.2 — real photography replaces it once the first batch arrives).
- *  - Trust strip (below hero) and "Why LAAL": real copy from the Content Pack §4.
+ *  - Trust strip (below hero): the same three certification/testing facts shown on About and
+ *    the footer (`CERTIFICATION_FACTS` in components/ui/TrustBadge.tsx), kept in sync there.
+ *  - "Why LAAL": real copy from the Content Pack §4.
  *  - Product cards: live from the database.
  *  - "How to order" and the bottom trust strip: factual site mechanics from the SRS (guest
  *    checkout, four payment methods, WhatsApp tracking, COD nationwide, full INCI on every
  *    product, patch-test guidance). Safe to state.
  *  - Closing block: real copy from the Content Pack §4.
  */
-
-const HERO_TRUST_POINTS: { icon: TrustBadgeIconRef; lead: string; body: string }[] = [
-  {
-    icon: { image: "/brand/flask.jpg", alt: "Independently tested" },
-    lead: "Independently tested.",
-    body: "Both serums tested at PCSIR Laboratories, Islamabad. Mercury: not detectable.",
-  },
-  {
-    // A supplied "yes.jpg" image for this point carries a visible tiled "pngtree" watermark
-    // (an unlicensed stock-preview image, not a paid/cleared asset) — shipping it would put a
-    // third party's watermark on the live site and is a real copyright/licensing exposure, so
-    // it was left on the plain SVG. Swap it in once a clean, unwatermarked image exists.
-    icon: "document",
-    lead: "Every ingredient printed.",
-    body: "Full INCI on every bottle, every box and every product page.",
-  },
-  {
-    icon: { image: "/brand/no.jpg", alt: "No fairness claims" },
-    lead: "No fairness claims. Ever.",
-    body: "We do not sell skin lightening, and we never will.",
-  },
-];
 
 const WHY_LAAL = [
   {
@@ -92,8 +72,8 @@ const TRUST_POINTS = [
   "Patch-test guidance on every bottle",
 ];
 
-// Same facts as HERO_TRUST_POINTS/TRUST_POINTS below, just in a second, decorative form — never
-// new copy written just for the strip. See the note in MarqueeStrip.tsx on why it's aria-hidden.
+// Same facts as TRUST_POINTS below, just in a second, decorative form — never new copy written
+// just for the strip. See the note in MarqueeStrip.tsx on why it's aria-hidden.
 const MARQUEE_ITEMS = [
   "Every ingredient printed — every active named",
   "Independently tested at PCSIR Laboratories, Islamabad",
@@ -144,16 +124,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Trust strip — directly under the hero, three short items, icon-forward so it can't
-          be skimmed past. Copy is unchanged from the previous plain-text version. */}
+      {/* Trust strip — directly under the hero, the same three certification/testing facts
+          shown on About and in the footer (CERTIFICATION_FACTS), so the claims never drift. */}
       <section className="border-b border-line">
         <div className="shell grid grid-cols-1 gap-6 py-12 md:grid-cols-3">
-          {HERO_TRUST_POINTS.map((point) => (
+          {CERTIFICATION_FACTS.map((fact) => (
             <TrustBadge
-              key={point.lead}
-              icon={point.icon}
-              heading={point.lead}
-              body={point.body}
+              key={fact.heading}
+              icon={fact.icon}
+              heading={fact.heading}
+              body={fact.body}
             />
           ))}
         </div>
