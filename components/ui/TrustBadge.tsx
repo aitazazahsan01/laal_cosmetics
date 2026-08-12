@@ -212,9 +212,9 @@ export const CERTIFICATION_FACTS: {
     body: "Quality Management. The same facility holds ISO 9001:2015 certification.",
   },
   {
-    icon: { image: "/brand/flask.jpg", alt: "Independently tested" },
-    shortLabel: "Independently tested",
-    heading: "Independently Tested",
+    icon: { image: "/brand/flask.jpg", alt: "PCSIR Certified" },
+    shortLabel: "PCSIR Certified",
+    heading: "PCSIR Certified",
     body: "Both formulations were submitted to PCSIR Laboratories Islamabad — a Government of Pakistan laboratory — before a single bottle was sold. Mercury: not detectable. Patch test: negative.",
   },
 ];
