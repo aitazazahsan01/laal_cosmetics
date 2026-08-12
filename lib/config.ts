@@ -81,8 +81,8 @@ export const FOOTER_NAV = [
     links: [
       { label: "Shipping", href: "/shipping" },
       { label: "Returns", href: "/returns" },
-      { label: "Privacy", href: "/privacy" },
-      { label: "Terms", href: "/terms" },
+      { label: "Privacy & Policies", href: "/privacy" },
+      { label: "Terms and Conditions", href: "/terms" },
     ],
   },
 ] as const;
