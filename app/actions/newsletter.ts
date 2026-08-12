@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import type { NewsletterFormState } from "@/lib/newsletter-state";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 /**
@@ -10,16 +11,6 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
  * A repeat signup from the same email is upserted rather than treated as an error — success
  * either way avoids revealing whether an address was already on the list.
  */
-
-export type NewsletterFormState = {
-  status: "idle" | "error" | "success";
-  message: string | null;
-};
-
-export const initialNewsletterState: NewsletterFormState = {
-  status: "idle",
-  message: null,
-};
 
 export async function subscribeToNewsletterAction(
   _prevState: NewsletterFormState,

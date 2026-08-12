@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 
-import {
-  initialNewsletterState,
-  subscribeToNewsletterAction,
-} from "@/app/actions/newsletter";
+import { subscribeToNewsletterAction } from "@/app/actions/newsletter";
+import { initialNewsletterState } from "@/lib/newsletter-state";
 
 /**
  * Footer email capture. Stores the address now (NewsletterSubscriber); sends nothing until
