@@ -51,7 +51,7 @@ function PhotoGallery({
 
   return (
     <div>
-      <div className="flex min-h-[340px] items-center justify-center overflow-hidden rounded-panel border border-line bg-blush">
+      <div className="flex min-h-[340px] items-center justify-center overflow-hidden rounded-panel border border-line border-t-2 border-t-ruby bg-blush">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={active}
@@ -106,7 +106,7 @@ function PlaceholderGallery({ productName }: { productName: string }) {
 
   return (
     <div>
-      <div className="flex min-h-[340px] items-center justify-center rounded-panel border border-line bg-blush p-8">
+      <div className="flex min-h-[340px] items-center justify-center rounded-panel border border-line border-t-2 border-t-ruby bg-blush p-8">
         <BottleMark
           variant={active.variant}
           height={310}

@@ -39,7 +39,7 @@ export function ProductCard({
         className="absolute right-4 top-4 z-10"
       />
 
-      <div className="mb-2 flex h-[168px] items-center justify-center self-center">
+      <div className="mb-4 flex h-[200px] w-full items-center justify-center overflow-hidden rounded-panel border border-line border-t-2 border-t-ruby bg-blush p-4">
         {thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
