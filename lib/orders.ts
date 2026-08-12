@@ -190,7 +190,14 @@ export async function createOrder(
         },
         include: { items: true },
       });
-    });
+    }, { timeout: 20000 });
+    // ^ Prisma's interactive-transaction default is 5000ms. This transaction is several
+    // sequential round trips (product lookup, delivery settings, a per-line stock
+    // decrement, discount redemption, order-number lookup, then the order insert itself),
+    // and each round trip pays the network latency to Supabase's pooler — comfortably
+    // exceeds 5s in practice, especially from outside the database's own region, so the
+    // whole order was rolling back right before the final insert. 20s gives real headroom
+    // without masking a truly stuck query.
   } catch (error) {
     if (error instanceof OrderError) {
       return { ok: false, error: error.message };
