@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { getProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ButtonLink } from "@/components/ui/Button";
-import { MarqueeStrip } from "@/components/ui/MarqueeStrip";
 import { CERTIFICATION_FACTS, TrustBadge } from "@/components/ui/TrustBadge";
 
 // Stock and catalogue content come straight from the database on every request.
@@ -72,23 +71,11 @@ const TRUST_POINTS = [
   "Patch-test guidance on every bottle",
 ];
 
-// Same facts as TRUST_POINTS below, just in a second, decorative form — never new copy written
-// just for the strip. See the note in MarqueeStrip.tsx on why it's aria-hidden.
-const MARQUEE_ITEMS = [
-  "Every ingredient printed — every active named",
-  "Independently tested at PCSIR Laboratories, Islamabad",
-  "No fairness claims. Ever.",
-  "Cash on delivery — nationwide",
-  "Guest checkout — no account needed",
-];
-
 export default async function HomePage() {
   const products = await getProducts();
 
   return (
     <main>
-      <MarqueeStrip items={MARQUEE_ITEMS} />
-
       {/* Hero */}
       <section className="border-b border-line bg-blush">
         <div className="mx-auto grid max-w-shell grid-cols-1 items-center gap-10 px-5 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:py-24">
@@ -185,9 +172,8 @@ export default async function HomePage() {
       <section className="py-section">
         <div className="shell">
           <div className="mb-9">
-            <span className="label">How to order</span>
-            <h2 className="mt-3 max-w-[22ch] font-serif text-[clamp(1.6rem,3vw,2.1rem)]">
-              Three steps, no account required.
+            <h2 className="font-serif text-[clamp(1.3rem,2.4vw,1.7rem)] text-oxblood">
+              How to order
             </h2>
           </div>
 
