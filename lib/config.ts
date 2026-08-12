@@ -49,10 +49,9 @@ export const INSTAGRAM_URL: string | null = null;
 export const FACEBOOK_URL: string | null = null;
 export const LINKEDIN_URL: string | null = null;
 
-/** Primary navigation. Every route here is built. */
+/** Primary navigation. Every route here is built. Products are found via "Shop", not listed
+ * individually in the navbar. */
 export const PRIMARY_NAV = [
-  { label: "Niacinamide+", href: "/niacinamide" },
-  { label: "Hyaluronic+", href: "/hyaluronic" },
   { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
   { label: "Ingredients", href: "/ingredients" },
@@ -66,7 +65,6 @@ export const FOOTER_NAV = [
     links: [
       { label: "Niacinamide+", href: "/niacinamide" },
       { label: "Hyaluronic+", href: "/hyaluronic" },
-      { label: "Shop both", href: "/shop" },
     ],
   },
   {
